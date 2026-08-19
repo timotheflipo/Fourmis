@@ -1064,39 +1064,48 @@ p { margin: 0; }
 */
 @media (prefers-reduced-motion: no-preference) {
 
-  /* Apparition au défilement, déclenchée par IntersectionObserver. */
+  /*
+     État de départ. Il n'y a volontairement AUCUNE transition ici :
+     l'opacité et le décalage sont recalculés à chaque image par
+     `js/main.js` en fonction de la position de défilement. Une
+     transition ferait jouer l'animation toute seule, indépendamment
+     du geste — précisément ce qu'on veut éviter.
+  */
   .reveal {
     opacity: 0;
-    transform: translateY(18px);
-    transition:
-      opacity 0.55s ease,
-      transform 0.75s cubic-bezier(0.16, 1, 0.3, 1);
-    transition-delay: calc(var(--i, 0) * 80ms);
+    transform: translateY(30px);
   }
 
-  .reveal.is-visible {
+  /* Posé une fois le bloc entièrement révélé : les styles en ligne sont retirés. */
+  .reveal.is-revealed {
     opacity: 1;
     transform: none;
   }
 
-  /* Entrée du hero au chargement, en cascade. */
+  /* Entrée au chargement, en cascade — celle-ci reste liée au temps. */
   .hero__eyebrow,
   .hero h1,
   .hero__lede,
   .hero .search,
-  .hero .stats {
+  .hero .stats,
+  .article-hero .eyebrow,
+  .article-hero h1,
+  .article-hero__lede {
     opacity: 0;
-    animation: rise-in 0.85s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    animation: rise-in 1.15s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   }
 
-  .hero__eyebrow { animation-delay: 0.05s; }
-  .hero h1       { animation-delay: 0.15s; }
-  .hero__lede    { animation-delay: 0.28s; }
-  .hero .search  { animation-delay: 0.40s; }
-  .hero .stats   { animation-delay: 0.52s; }
+  .hero__eyebrow,
+  .article-hero .eyebrow    { animation-delay: 0.10s; }
+  .hero h1,
+  .article-hero h1          { animation-delay: 0.26s; }
+  .hero__lede,
+  .article-hero__lede       { animation-delay: 0.44s; }
+  .hero .search             { animation-delay: 0.62s; }
+  .hero .stats              { animation-delay: 0.80s; }
 
   @keyframes rise-in {
-    from { opacity: 0; transform: translateY(22px); }
+    from { opacity: 0; transform: translateY(26px); }
     to   { opacity: 1; transform: none; }
   }
 }

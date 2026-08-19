@@ -337,66 +337,140 @@
   }
 
   /* ---------------------------------------------------------
-     5. Apparition au défilement
+     5. Apparition liée au défilement
 
-     Les classes sont posées ici plutôt que dans le HTML : la mise
+     La progression de chaque bloc est recalculée à chaque image à
+     partir de sa position à l'écran, plutôt que déclenchée une fois
+     puis laissée à une transition CSS. Conséquence : un bloc ne se
+     dévoile complètement qu'une fois réellement amené au centre de
+     l'écran, et l'apparition suit exactement le geste de défilement.
+
+     Les cibles sont désignées ici plutôt que dans le HTML : la mise
      en page reste lisible, et une nouvelle section hérite de l'effet
      sans qu'on ait à y penser.
      --------------------------------------------------------- */
 
-  /* Blocs qui apparaissent seuls. */
-  var SOLO = [
-    '.sec-head',
-    '.figure-wide',
-    '.map',
-    '.donut-card',
-    '.split > div',
-    '.prose > h2',
-    '.prose > figure',
-    '.prose > .callout',
-    '.prose > .pull',
-    '.sources'
-  ];
+  /* Le haut du bloc, en fraction de la hauteur d'écran. */
+  var FROM = 1.00;   /* à hauteur du bord bas : rien n'est visible */
+  var TO   = 0.42;   /* arrivé aux deux cinquièmes hauts : entièrement visible */
+  var SHIFT = 30;    /* décalage vertical de départ, en pixels */
+  var STAGGER = 0.07; /* décalage de fenêtre entre voisins d'une même grille */
 
-  /* Grilles dont les enfants apparaissent en cascade. */
+  /* Blocs autonomes. */
+  var SOLO = ['.sec-head', '.figure-wide', '.map', '.donut-card', '.split > div'];
+
+  /* Grilles dont les enfants se dévoilent en cascade. */
   var GRIDS = ['.cards', '.castes', '.facts', '.next-cards'];
 
-  var targets = [];
+  /*
+     Une unité = un ou plusieurs éléments qui apparaissent ensemble,
+     pilotés par la position du premier d'entre eux.
+  */
+  var units = [];
+  var seen = [];
 
-  /* `.donut-card` répond à deux sélecteurs à la fois : on ne le compte qu'une fois. */
-  var add = function (el) {
-    if (targets.indexOf(el) === -1) targets.push(el);
+  var addUnit = function (els, stagger) {
+    els = els.filter(function (el) { return seen.indexOf(el) === -1; });
+    if (!els.length) return;
+    els.forEach(function (el) { seen.push(el); el.classList.add('reveal'); });
+    units.push({ els: els, stagger: stagger || 0, done: false });
   };
 
   SOLO.forEach(function (sel) {
-    Array.prototype.forEach.call(document.querySelectorAll(sel), add);
+    Array.prototype.forEach.call(document.querySelectorAll(sel), function (el) {
+      addUnit([el], 0);
+    });
   });
 
   GRIDS.forEach(function (sel) {
     Array.prototype.forEach.call(document.querySelectorAll(sel), function (grid) {
       Array.prototype.forEach.call(grid.children, function (child, i) {
         /* Au-delà de quatre, le décalage devient une attente plutôt qu'un effet. */
-        child.style.setProperty('--i', Math.min(i, 4));
-        add(child);
+        addUnit([child], Math.min(i, 4));
       });
     });
   });
 
-  targets.forEach(function (el) { el.classList.add('reveal'); });
+  /*
+     Dans un article, découper par titre de niveau 2 : chaque partie —
+     titre, paragraphes, figures, encadrés — forme un seul bloc. Animer
+     les titres et les images sans le texte donnait un résultat bancal.
+  */
+  Array.prototype.forEach.call(document.querySelectorAll('.prose'), function (prose) {
+    var block = [];
+    var flush = function () {
+      if (block.length) { addUnit(block, 0); block = []; }
+    };
+    Array.prototype.forEach.call(prose.children, function (el) {
+      if (el.tagName === 'H2' && block.length) flush();
+      block.push(el);
+    });
+    flush();
+  });
 
-  if ('IntersectionObserver' in window) {
-    var io = new IntersectionObserver(function (entries) {
-      entries.forEach(function (entry) {
-        if (!entry.isIntersecting) return;
-        entry.target.classList.add('is-visible');
-        io.unobserve(entry.target);
+  if (units.length) {
+    var ticking = false;
+
+    var paint = function () {
+      ticking = false;
+      var vh = window.innerHeight;
+
+      /*
+         En bas de page, un bloc peut ne jamais atteindre `TO` : sans ce
+         garde-fou il resterait figé à moitié transparent.
+      */
+      var atBottom =
+        window.pageYOffset + vh >= document.documentElement.scrollHeight - 2;
+
+      units.forEach(function (unit) {
+        if (unit.done) return;
+
+        var offset = unit.stagger * STAGGER;
+        var top = unit.els[0].getBoundingClientRect().top / vh;
+        /* On retranche : plus le rang est élevé, plus le bloc se dévoile tard. */
+        var p = (FROM - offset - top) / (FROM - TO);
+
+        if (atBottom) p = 1;
+        p = p < 0 ? 0 : (p > 1 ? 1 : p);
+
+        /*
+           Deux courbes distinctes, chacune pour ce qu'elle fait de mieux :
+           - l'opacité suit une courbe en S, qui démarre lentement. Le bloc
+             reste discret tant qu'on n'a pas vraiment défilé, au lieu d'être
+             à moitié visible dès qu'il pointe en bas de l'écran ;
+           - le décalage vertical décélère, pour venir se poser en douceur.
+        */
+        var fade = p * p * (3 - 2 * p);
+        var eased = 1 - Math.pow(1 - p, 3);
+
+        if (p >= 1) {
+          unit.done = true;
+          unit.els.forEach(function (el) {
+            el.style.opacity = '';
+            el.style.transform = '';
+            el.classList.add('is-revealed');
+          });
+          return;
+        }
+
+        var shift = ((1 - eased) * SHIFT).toFixed(2);
+        unit.els.forEach(function (el) {
+          el.style.opacity = fade.toFixed(3);
+          el.style.transform = 'translateY(' + shift + 'px)';
+        });
       });
-    }, { rootMargin: '0px 0px -8% 0px', threshold: 0.08 });
+    };
 
-    targets.forEach(function (el) { io.observe(el); });
-  } else {
-    /* Sans IntersectionObserver, on affiche tout plutôt que de masquer. */
-    targets.forEach(function (el) { el.classList.add('is-visible'); });
+    var schedule = function () {
+      if (ticking) return;
+      ticking = true;
+      window.requestAnimationFrame(paint);
+    };
+
+    window.addEventListener('scroll', schedule, { passive: true });
+    window.addEventListener('resize', schedule);
+    window.addEventListener('load', schedule);
+    schedule();
   }
 
 })();
