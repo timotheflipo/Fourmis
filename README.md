@@ -56,6 +56,21 @@ photographie plein cadre comme seule source de couleur.
 | Boutons et champs | pilule (9999 px) |
 | Écart entre sections | 80 px |
 
+## Animations
+
+- **Apparition au défilement** : `IntersectionObserver` ajoute `.is-visible` aux
+  blocs (titres de section, cartes, figures, encadrés, citations). Fondu +
+  montée de 18 px, `cubic-bezier(0.16, 1, 0.3, 1)`, cascade de 80 ms dans les
+  grilles. Les classes sont posées par `js/main.js`, pas dans le HTML : une
+  nouvelle section hérite de l'effet sans intervention.
+- **Survol** : soulèvement de 5-6 px sur les cartes, zoom discret sur les
+  images, bordure lime sur les castes et les faits. Pas d'ombre, pour rester
+  fidèle au système.
+- **Accessibilité** : toutes les règles qui masquent sont enfermées dans
+  `@media (prefers-reduced-motion: no-preference)`. Si l'utilisateur a
+  désactivé les animations, rien n'est jamais masqué — même sans JavaScript.
+  Les paragraphes de lecture ne sont volontairement jamais animés.
+
 ## Crédits
 
 - Photographies : [Unsplash](https://unsplash.com) (licence Unsplash)

@@ -336,4 +336,67 @@
     });
   }
 
+  /* ---------------------------------------------------------
+     5. Apparition au défilement
+
+     Les classes sont posées ici plutôt que dans le HTML : la mise
+     en page reste lisible, et une nouvelle section hérite de l'effet
+     sans qu'on ait à y penser.
+     --------------------------------------------------------- */
+
+  /* Blocs qui apparaissent seuls. */
+  var SOLO = [
+    '.sec-head',
+    '.figure-wide',
+    '.map',
+    '.donut-card',
+    '.split > div',
+    '.prose > h2',
+    '.prose > figure',
+    '.prose > .callout',
+    '.prose > .pull',
+    '.sources'
+  ];
+
+  /* Grilles dont les enfants apparaissent en cascade. */
+  var GRIDS = ['.cards', '.castes', '.facts', '.next-cards'];
+
+  var targets = [];
+
+  /* `.donut-card` répond à deux sélecteurs à la fois : on ne le compte qu'une fois. */
+  var add = function (el) {
+    if (targets.indexOf(el) === -1) targets.push(el);
+  };
+
+  SOLO.forEach(function (sel) {
+    Array.prototype.forEach.call(document.querySelectorAll(sel), add);
+  });
+
+  GRIDS.forEach(function (sel) {
+    Array.prototype.forEach.call(document.querySelectorAll(sel), function (grid) {
+      Array.prototype.forEach.call(grid.children, function (child, i) {
+        /* Au-delà de quatre, le décalage devient une attente plutôt qu'un effet. */
+        child.style.setProperty('--i', Math.min(i, 4));
+        add(child);
+      });
+    });
+  });
+
+  targets.forEach(function (el) { el.classList.add('reveal'); });
+
+  if ('IntersectionObserver' in window) {
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (!entry.isIntersecting) return;
+        entry.target.classList.add('is-visible');
+        io.unobserve(entry.target);
+      });
+    }, { rootMargin: '0px 0px -8% 0px', threshold: 0.08 });
+
+    targets.forEach(function (el) { io.observe(el); });
+  } else {
+    /* Sans IntersectionObserver, on affiche tout plutôt que de masquer. */
+    targets.forEach(function (el) { el.classList.add('is-visible'); });
+  }
+
 })();
