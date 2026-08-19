@@ -1,0 +1,13 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "superorganisme",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": [
+        "/Users/tim/Documents/Claude/Projects/Fourmis/serve.py"
+      ],
+      "port": 4310
+    }
+  ]
+}
