@@ -572,6 +572,17 @@
       fill.style.transform = 'scaleX(' + p.toFixed(4) + ')';
       bar.setAttribute('aria-valuenow', String(Math.round(p * 100)));
 
+      /*
+         Le sommaire ne s'affiche qu'une fois le lecteur entré dans le texte.
+         Posé en position fixe et centré, il flottait sinon par-dessus l'image
+         du hero, où il était à la fois illisible et sans objet.
+      */
+      if (toc) {
+        var inBody = prose.getBoundingClientRect().top < window.innerHeight * 0.35;
+        var pastEnd = prose.getBoundingClientRect().bottom < window.innerHeight * 0.5;
+        toc.dataset.visible = (inBody && !pastEnd) ? 'true' : 'false';
+      }
+
       if (!links.length) return;
 
       /*

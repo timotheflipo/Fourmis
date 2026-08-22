@@ -1521,10 +1521,27 @@ p { margin: 0; }
     display: block;
     position: fixed;
     top: 50%;
-    transform: translateY(-50%);
     left: max(24px, calc(50% - 620px));
     width: 220px;
     z-index: 30;
+
+    /* Masqué tant qu'on n'est pas entré dans le texte : voir js/main.js. */
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transform: translateY(-50%) translateX(-6px);
+    transition:
+      opacity var(--dur-panel) var(--ease-out),
+      transform var(--dur-panel) var(--ease-out),
+      visibility 0s linear var(--dur-panel);
+  }
+
+  .toc[data-visible='true'] {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transform: translateY(-50%) translateX(0);
+    transition-delay: 0s;
   }
 
   .toc__list {
