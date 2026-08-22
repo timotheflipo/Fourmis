@@ -498,4 +498,158 @@
     schedule();
   }
 
+  /* ---------------------------------------------------------
+     6. Repères de lecture : progression et sommaire
+
+     Les articles font de 1 300 à 2 000 mots, découpés en cinq à sept parties,
+     et n'offraient aucun repère : ni « où j'en suis », ni « où je peux aller ».
+     Les deux se déduisent du même calcul, donc du même écouteur de défilement.
+     --------------------------------------------------------- */
+
+  var prose = document.querySelector('.prose');
+
+  if (prose) {
+    var heads = Array.prototype.filter.call(
+      prose.querySelectorAll('h2[id]'),
+      function (h) { return h.id; }
+    );
+
+    /* ---- Barre de progression ---- */
+
+    var bar = document.createElement('div');
+    bar.className = 'progress';
+    bar.innerHTML = '<div class="progress__fill"></div>';
+    bar.setAttribute('role', 'progressbar');
+    bar.setAttribute('aria-label', 'Progression dans l\'article');
+    bar.setAttribute('aria-valuemin', '0');
+    bar.setAttribute('aria-valuemax', '100');
+    document.body.appendChild(bar);
+    var fill = bar.firstChild;
+
+    /* ---- Sommaire latéral ---- */
+
+    var toc = null, links = [];
+
+    if (heads.length > 2) {
+      toc = document.createElement('nav');
+      toc.className = 'toc';
+      toc.setAttribute('aria-label', 'Sommaire de l\'article');
+
+      var list = document.createElement('ol');
+      list.className = 'toc__list';
+
+      heads.forEach(function (h) {
+        var li = document.createElement('li');
+        var a = document.createElement('a');
+        a.className = 'toc__link';
+        a.href = '#' + h.id;
+        /* Le titre complet en info-bulle : la colonne est étroite. */
+        a.title = h.textContent.trim();
+        a.textContent = h.textContent.trim();
+        li.appendChild(a);
+        list.appendChild(li);
+        links.push(a);
+      });
+
+      toc.appendChild(list);
+      document.body.appendChild(toc);
+    }
+
+    var proseTop = 0, proseLen = 1, tocTicking = false;
+
+    var measure = function () {
+      var r = prose.getBoundingClientRect();
+      proseTop = r.top + window.pageYOffset;
+      /* On considère l'article lu quand son bas atteint le bas de l'écran. */
+      proseLen = Math.max(1, r.height - window.innerHeight * 0.4);
+    };
+
+    var update = function () {
+      tocTicking = false;
+
+      var p = (window.pageYOffset - proseTop + window.innerHeight * 0.4) / proseLen;
+      p = p < 0 ? 0 : (p > 1 ? 1 : p);
+      fill.style.transform = 'scaleX(' + p.toFixed(4) + ')';
+      bar.setAttribute('aria-valuenow', String(Math.round(p * 100)));
+
+      if (!links.length) return;
+
+      /*
+         Partie courante : le dernier titre passé au-dessus du tiers haut de
+         l'écran. Prendre « le plus proche du centre » faisait sauter la
+         surbrillance d'avant en arrière au milieu des longues sections.
+      */
+      var current = 0;
+      for (var i = 0; i < heads.length; i++) {
+        if (heads[i].getBoundingClientRect().top <= window.innerHeight * 0.33) current = i;
+      }
+      for (var j = 0; j < links.length; j++) {
+        links[j].setAttribute('aria-current', j === current ? 'true' : 'false');
+      }
+    };
+
+    var scheduleToc = function () {
+      if (tocTicking) return;
+      tocTicking = true;
+      window.requestAnimationFrame(update);
+    };
+
+    measure();
+    update();
+    window.addEventListener('scroll', scheduleToc, { passive: true });
+    window.addEventListener('resize', function () { measure(); scheduleToc(); });
+    window.addEventListener('load', function () { measure(); scheduleToc(); });
+  }
+
+  /* ---------------------------------------------------------
+     7. Composition des chiffres du hero
+
+     Vu une fois par session, jamais deux : on est dans le budget « rare, on
+     peut se faire plaisir ». Seul le premier nombre de chaque libellé est
+     animé — « 20 millions de milliards » est une formule, pas un compteur.
+     --------------------------------------------------------- */
+
+  var stats = document.querySelectorAll('.stat__value');
+
+  if (stats.length &&
+      !window.matchMedia('(prefers-reduced-motion: reduce)').matches &&
+      !sessionStorage.getItem('statsVues')) {
+
+    try { sessionStorage.setItem('statsVues', '1'); } catch (e) {}
+
+    Array.prototype.forEach.call(stats, function (el, i) {
+      var raw = el.textContent;
+      /*
+         Premier nombre du libellé. Le motif doit se terminer sur un chiffre :
+         une classe qui accepte l'espace en fin de capture avalait l'espace qui
+         suit le nombre, et « 20 millions » se recomposait en « 20millions ».
+         Les groupes de milliers ne sont repris que s'ils font bien trois
+         chiffres, ce qui distingue « 16 000 » de « 20 millions ».
+      */
+      var m = raw.match(/\d{1,3}(?:[ \u00a0\u202f]\d{3})+|\d+/);
+      if (!m) return;
+
+      var target = parseInt(m[0].replace(/[^\d]/g, ''), 10);
+      if (!target || target > 1000000) return;
+
+      var before = raw.slice(0, m.index);
+      var after = raw.slice(m.index + m[0].length);
+      var group = function (n) { return String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ' '); };
+
+      var start = null, DUR = 780, delay = 260 + i * 90;
+
+      var tick = function (now) {
+        if (start === null) start = now;
+        var t = Math.min(1, (now - start) / DUR);
+        /* Décélération franche : le nombre se pose, il ne freine pas longtemps. */
+        var eased = 1 - Math.pow(1 - t, 4);
+        el.textContent = before + group(Math.round(target * eased)) + after;
+        if (t < 1) window.requestAnimationFrame(tick);
+      };
+
+      el.textContent = before + '0' + after;
+      window.setTimeout(function () { window.requestAnimationFrame(tick); }, delay);
+    });
+  }
+
 })();

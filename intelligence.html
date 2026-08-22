@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=7">
+<link rel="stylesheet" href="css/style.css?v=10">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%23333'/><circle cx='50' cy='30' r='11' fill='%23d7eb80'/><circle cx='50' cy='52' r='9' fill='%23d7eb80'/><circle cx='50' cy='74' r='13' fill='%23d7eb80'/></svg>">
 </head>
 <body>
@@ -212,6 +212,42 @@
           voyageur de commerce.
         </p>
 
+        <!--
+          Le mécanisme décrit juste au-dessus, en fonctionnement. Aucune des
+          fourmis simulées ne connaît la position de la nourriture ni ne
+          communique avec une autre : elles déposent, elles sentent, elles
+          tournent. Le chemin apparaît tout seul.
+        -->
+        <figure class="stig">
+          <div class="stig__frame">
+            <canvas id="stigSim" class="stig__canvas" width="900" height="380"
+                    role="img"
+                    aria-label="Simulation : des fourmis relient un nid à une source de nourriture en déposant des phéromones, et la piste la plus courte se renforce peu à peu."></canvas>
+          </div>
+
+          <div class="stig__bar">
+            <div class="stig__actions">
+              <button class="btn btn--lime" type="button" id="stigToggle">Pause</button>
+              <button class="btn btn--ghost" type="button" id="stigWall" aria-pressed="false">Poser un obstacle</button>
+              <button class="btn btn--ghost" type="button" id="stigReset">Réinitialiser</button>
+            </div>
+            <ul class="stig__key">
+              <li><span class="stig__dot stig__dot--food"></span>Piste vers la nourriture</li>
+              <li><span class="stig__dot stig__dot--home"></span>Piste de retour au nid</li>
+            </ul>
+          </div>
+
+          <figcaption>
+            Chaque fourmi suit trois règles : avancer un peu au hasard, déposer derrière
+            elle une trace qui faiblit au fil du trajet, et tourner vers la phéromone la
+            plus concentrée. Le plus court chemin gagne parce qu'un aller-retour court se
+            répète plus souvent qu'un long, et que la piste s'y renforce donc plus vite
+            qu'elle ne s'évapore. <strong>Activez « poser un obstacle »</strong> et tracez
+            un mur en travers de la piste : la colonne se réorganise sans que personne
+            n'ait donné d'ordre.
+          </figcaption>
+        </figure>
+
         <div class="callout">
           <h4>Mais l'optimum n'est pas toujours optimal</h4>
           <p>
@@ -343,6 +379,7 @@
   </div>
 </footer>
 
-<script src="js/main.js?v=7"></script>
+<script src="js/main.js?v=10"></script>
+<script src="js/stigmergie.js?v=10"></script>
 </body>
 </html>
