@@ -76,10 +76,21 @@
 *::before,
 *::after { box-sizing: border-box; }
 
-html { scroll-behavior: smooth; }
+/*
+   Défilement doux réservé aux ancres cliquées. Posé sur `html`, il
+   s'appliquait aussi à la restauration de position au rechargement et aux
+   touches Début / Fin, qui doivent rester instantanées.
+*/
+html:focus-within { scroll-behavior: smooth; }
 
 body {
   margin: 0;
+  /*
+     `100vw` sur la figure pleine largeur compte la barre de défilement sur
+     les systèmes qui l'affichent en permanence. Sans ce garde-fou, la page
+     gagnerait une quinzaine de pixels de défilement horizontal sous Windows.
+  */
+  overflow-x: clip;
   background: var(--white);
   color: var(--ink);
   font-family: var(--font-body);
@@ -139,6 +150,52 @@ p { margin: 0; }
 
 .band { background: var(--linen); }
 
+/*
+   Le rythme de la page était blanc / bandeau / blanc / bandeau, six fois
+   sans une exception, avec le même gabarit à chaque section. Deux ruptures
+   suffisent à casser cette régularité : une section sombre, et une figure
+   qui sort de la colonne.
+*/
+.section--dark {
+  background: #1c1e19;
+  color: var(--linen);
+  padding: 96px 0;
+}
+
+.section--dark h2 { color: var(--white); }
+.section--dark .eyebrow { color: var(--lime); }
+.section--dark .sec-head__lede { color: rgba(240, 240, 235, 0.72); }
+
+.section--dark .caste {
+  background: rgba(255, 255, 255, 0.045);
+  border-color: rgba(255, 255, 255, 0.18);
+}
+.section--dark .caste__span { color: var(--lime); }
+.section--dark .caste__name { color: var(--white); border-top-color: rgba(255, 255, 255, 0.16); }
+.section--dark .caste__meta { color: rgba(240, 240, 235, 0.7); }
+
+@media (hover: hover) and (pointer: fine) {
+  .section--dark .caste:hover { border-color: var(--lime); }
+}
+
+/* La figure déborde la colonne de texte pour rompre la grille. */
+.figure-bleed {
+  margin: 64px calc(50% - 50vw) 0;
+  width: 100vw;
+  max-width: 100vw;
+}
+.figure-bleed .compare { border-radius: 0; aspect-ratio: 21 / 9; }
+.figure-bleed .figure__caption {
+  max-width: 760px;
+  margin: 20px auto 0;
+  padding: 0 24px;
+}
+
+@media (max-width: 1024px) {
+  .figure-bleed { margin-top: 48px; }
+  .figure-bleed .compare { aspect-ratio: 16 / 9; }
+}
+
 /* ---------- Boutons ---------- */
 
 .btn {
@@ -155,7 +212,7 @@ p { margin: 0; }
   cursor: pointer;
   text-decoration: none;
   white-space: nowrap;
-  transition: background-color 0.18s ease, color 0.18s ease, border-color 0.18s ease;
+  /* transition : voir la règle groupée « Survol et appui » en fin de fichier */
 }
 
 .btn--lime { background: var(--lime); color: var(--ink); }
@@ -433,20 +490,26 @@ p { margin: 0; }
   letter-spacing: 0.02em;
 }
 
+/*
+   Chevron de descente. L'oscillation infinie a été retirée : une animation
+   qui tourne en permanence sans rien encoder finit par se faire ignorer, et
+   c'est du travail pour le compositeur pendant toute la visite. Le geste est
+   maintenant à l'initiative du lecteur.
+*/
 .hero__scroll {
   position: absolute;
   bottom: 32px;
   left: 50%;
   transform: translateX(-50%);
   z-index: 1;
-  color: rgba(255, 255, 255, 0.8);
-  animation: nudge 2.4s ease-in-out infinite;
+  color: rgba(255, 255, 255, 0.72);
+  transition: color var(--dur-hover) ease, transform var(--dur-press) var(--ease-out);
 }
 
-@keyframes nudge {
-  0%, 100% { transform: translate(-50%, 0); }
-  50% { transform: translate(-50%, 7px); }
+@media (hover: hover) and (pointer: fine) {
+  .hero__scroll:hover { color: var(--white); transform: translate(-50%, 4px); }
 }
+.hero__scroll:active { transform: translate(-50%, 6px); }
 
 /* ---------- En-têtes de section ---------- */
 
@@ -582,6 +645,14 @@ p { margin: 0; }
   cursor: pointer;
 }
 
+/*
+   Le panneau entrait en montant sur 280 ms et disparaissait d'un coup : il ne
+   repartait pas par où il était venu. En transition plutôt qu'en keyframes,
+   l'entrée et la sortie empruntent le même chemin, et une fermeture lancée
+   pendant l'ouverture repart de la position réelle au lieu de sauter.
+   La sortie est plus rapide que l'entrée : on décide lentement, le système
+   répond vite.
+*/
 .sheet__panel {
   position: relative;
   background: var(--white);
@@ -590,13 +661,29 @@ p { margin: 0; }
   width: min(920px, 100%);
   max-height: min(86vh, 760px);
   overflow-y: auto;
-  animation: rise 0.28s cubic-bezier(0.2, 0.7, 0.2, 1);
+  opacity: 1;
+  transform: none;
+  transition: opacity var(--dur-panel) var(--ease-out), transform var(--dur-panel) var(--ease-out);
 }
 
-@keyframes rise {
-  from { opacity: 0; transform: translateY(14px); }
-  to { opacity: 1; transform: none; }
+/* Un modal n'est ancré à aucun déclencheur : il reste centré, il monte à peine. */
+@starting-style {
+  .sheet[data-open='true'] .sheet__panel { opacity: 0; transform: translateY(12px) scale(0.985); }
 }
+
+.sheet[data-closing='true'] .sheet__panel {
+  opacity: 0;
+  transform: translateY(8px) scale(0.99);
+  transition-duration: 160ms;
+}
+
+.sheet__scrim {
+  transition: opacity var(--dur-panel) ease;
+}
+@starting-style {
+  .sheet[data-open='true'] .sheet__scrim { opacity: 0; }
+}
+.sheet[data-closing='true'] .sheet__scrim { opacity: 0; transition-duration: 160ms; }
 
 .sheet__close {
   position: absolute;
@@ -759,6 +846,11 @@ p { margin: 0; }
 .compare__tag--before { left: 16px; }
 .compare__tag--after { right: 16px; }
 
+/*
+   Le curseur natif reste transparent — le trait blanc et la poignée tiennent
+   déjà ce rôle — mais il doit se voir au clavier. Le focus est donc reporté
+   sur la poignée, qui grossit et prend un anneau.
+*/
 .compare__range {
   position: absolute;
   inset: 0;
@@ -767,6 +859,22 @@ p { margin: 0; }
   opacity: 0;
   margin: 0;
   cursor: ew-resize;
+}
+
+.compare__grip {
+  transition: transform var(--dur-press) var(--ease-out), box-shadow var(--dur-press) ease;
+}
+
+.compare__range:focus-visible { outline: none; }
+
+.compare:has(.compare__range:focus-visible) .compare__grip {
+  transform: translate(-50%, -50%) scale(1.12);
+  box-shadow: 0 0 0 3px var(--ink), 0 0 0 6px var(--white);
+}
+
+.compare:has(.compare__range:focus-visible) .compare__handle {
+  width: 3px;
+  background: var(--white);
 }
 
 .figure__caption {
@@ -800,7 +908,7 @@ p { margin: 0; }
   background: var(--lime);
   box-shadow: 0 0 0 4px rgba(215, 235, 128, 0.35);
   cursor: pointer;
-  transition: transform 0.18s ease, box-shadow 0.18s ease;
+  /* transition : voir la règle groupée « Survol et appui » en fin de fichier */
 }
 
 .pin:hover,
@@ -1196,55 +1304,90 @@ p { margin: 0; }
   .article-hero h1,
   .article-hero__lede {
     opacity: 0;
-    animation: rise-in 1.15s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    animation: rise-in 620ms var(--ease-out) forwards;
   }
 
+  /*
+     Cascade resserrée à 55 ms. À 180 ms d'écart et 1,15 s de durée, la carte
+     de statistiques finissait son entrée près de deux secondes après le
+     chargement : on attendait le hero au lieu de le lire.
+  */
   .hero__eyebrow,
-  .article-hero .eyebrow    { animation-delay: 0.10s; }
+  .article-hero .eyebrow    { animation-delay: 0ms; }
   .hero h1,
-  .article-hero h1          { animation-delay: 0.26s; }
+  .article-hero h1          { animation-delay: 55ms; }
   .hero__lede,
-  .article-hero__lede       { animation-delay: 0.44s; }
-  .hero .search             { animation-delay: 0.62s; }
-  .hero .stats              { animation-delay: 0.80s; }
+  .article-hero__lede       { animation-delay: 110ms; }
+  .hero .search             { animation-delay: 165ms; }
+  .hero .stats              { animation-delay: 220ms; }
 
   @keyframes rise-in {
-    from { opacity: 0; transform: translateY(26px); }
+    from { opacity: 0; transform: translateY(18px); }
     to   { opacity: 1; transform: none; }
   }
 }
 
-/* Survol : un léger soulèvement, sans ombre, pour rester dans le système. */
-.card {
-  transition: transform 0.32s cubic-bezier(0.2, 0.6, 0.2, 1);
-}
+/* ---------- Survol et appui ---------- */
 
-.card:hover,
-.card:focus-visible { transform: translateY(-6px); }
-
+/*
+   Le survol est vu des dizaines de fois par session : il doit être court.
+   Tout est repassé de 320-600 ms à 180-240 ms, et enfermé dans une requête
+   `hover: hover` — sur un écran tactile, un simple appui déclenchait l'état
+   de survol, qui restait ensuite collé jusqu'au tap suivant.
+*/
+/*
+   Une seule déclaration de transition par élément, sinon la dernière écrase
+   les précédentes en silence. Le transform est réglé sur la durée d'appui,
+   qui est la plus courte des deux : un survol légèrement plus rapide que
+   prévu ne se remarque pas, l'inverse si.
+*/
+.btn,
+.card,
+.pin,
+.sheet__close,
+.search__hit,
 .caste,
-.fact {
+.fact,
+.legend li,
+.toc__link {
   transition:
-    transform 0.32s cubic-bezier(0.2, 0.6, 0.2, 1),
-    border-color 0.32s ease,
-    background-color 0.32s ease;
+    transform var(--dur-press) var(--ease-out),
+    background-color var(--dur-hover) ease,
+    color var(--dur-hover) ease,
+    border-color var(--dur-hover) ease;
 }
 
-.caste:hover,
-.fact:hover {
-  transform: translateY(-5px);
-  border-color: var(--lime);
+@media (hover: hover) and (pointer: fine) {
+  .card:hover { transform: translateY(-3px); }
+
+  .caste:hover,
+  .fact:hover {
+    transform: translateY(-3px);
+    border-color: var(--ink);
+  }
+
+  .legend li:hover { transform: translateX(3px); }
+
+  /* `.split__media` rogne déjà son contenu : le zoom ne déborde pas. */
+  .split__media img { transition: transform 280ms var(--ease-out); }
+  .split__media:hover img { transform: scale(1.03); }
 }
 
-.caste img { transition: transform 0.38s cubic-bezier(0.2, 0.6, 0.2, 1); }
-.caste:hover img { transform: scale(1.09) rotate(-3deg); }
+/* Le focus clavier mérite le même soulèvement, tactile ou pas. */
+.card:focus-visible { transform: translateY(-3px); }
 
-.legend li { transition: transform 0.28s cubic-bezier(0.2, 0.6, 0.2, 1); }
-.legend li:hover { transform: translateX(4px); }
+/*
+   Retour à l'appui. Il manquait partout : rien sur le site ne réagissait au
+   moment où le doigt appuie, seulement au relâchement. C'est ce décalage qui
+   donne à une interface l'air d'hésiter.
+*/
+.btn:active,
+.sheet__close:active,
+.search__hit:active { transform: scale(0.97); }
 
-/* `.split__media` rogne déjà son contenu : le zoom peut s'y appliquer sans déborder. */
-.split__media img { transition: transform 0.6s cubic-bezier(0.2, 0.6, 0.2, 1); }
-.split__media:hover img { transform: scale(1.04); }
+.card:active { transform: scale(0.985) translateY(-3px); }
+
+.pin:active { transform: translate(-50%, -50%) scale(1.12); }
 
 /* ---------- Utilitaires ---------- */
 
@@ -1258,7 +1401,26 @@ p { margin: 0; }
   border: 0;
 }
 
-:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
+/*
+   Contour de focus. Il était en #333 partout, donc invisible dans l'en-tête
+   transparent posé sur le hero sombre : au clavier, on perdait le curseur dès
+   la première tabulation. Chaque contexte sombre reçoit maintenant sa variante.
+*/
+:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 3px;
+  border-radius: var(--radius-link);
+}
+
+.header:not(.header--solid) :focus-visible,
+.hero :focus-visible,
+.article-hero :focus-visible,
+.stats :focus-visible,
+.compare :focus-visible,
+.sheet__scrim:focus-visible {
+  outline-color: var(--white);
+  outline-width: 3px;
+}
 
 /* ---------- Adaptatif ---------- */
 
@@ -1317,11 +1479,29 @@ p { margin: 0; }
   .footer__cols { gap: 36px; }
 }
 
+/*
+   Mouvement réduit ne veut pas dire aucun retour. On coupe les déplacements
+   et les animations d'entrée ; on garde les transitions d'opacité et de
+   couleur, qui aident à comprendre ce qui change — et sans lesquelles les
+   boutons cessaient de réagir à l'appui.
+*/
 @media (prefers-reduced-motion: reduce) {
-  html { scroll-behavior: auto; }
+  html:focus-within { scroll-behavior: auto; }
+
   *, *::before, *::after {
     animation-duration: 0.001ms !important;
     animation-iteration-count: 1 !important;
-    transition-duration: 0.001ms !important;
+    transition-property: opacity, color, background-color, border-color, box-shadow !important;
+    transition-duration: 160ms !important;
   }
+
+  .card:hover, .card:focus-visible,
+  .caste:hover, .fact:hover,
+  .legend li:hover,
+  .split__media:hover img,
+  .card:hover .card__media img,
+  .card__more svg { transform: none !important; }
+
+  /* Un retour à l'appui reste utile : il n'y a pas de déplacement à l'écran. */
+  .btn:active, .sheet__close:active, .search__hit:active { opacity: 0.72; }
 }

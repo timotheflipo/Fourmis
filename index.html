@@ -9,12 +9,12 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=6">
+<link rel="stylesheet" href="css/style.css?v=7">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%23333'/><circle cx='50' cy='30' r='11' fill='%23d7eb80'/><circle cx='50' cy='52' r='9' fill='%23d7eb80'/><circle cx='50' cy='74' r='13' fill='%23d7eb80'/></svg>">
 </head>
 <body>
 
-<header class="header">
+<header class="header" id="top">
   <div class="wrap header__inner">
     <a class="wordmark" href="index.html">Superorganisme</a>
     <nav class="nav">
@@ -188,7 +188,7 @@
         </div>
       </div>
 
-      <div class="figure-wide">
+      <div class="figure-bleed">
         <div class="compare" id="compare">
           <img src="images/photos/savane-avant.jpg" alt="Savane densément peuplée de jeunes acacias">
           <img class="compare__after" src="images/photos/savane-apres.jpg" alt="Même savane, presque entièrement dépourvue d'acacias">
@@ -212,7 +212,7 @@
   </section>
 
   <!-- ============ Les castes ============ -->
-  <section class="section">
+  <section class="section section--dark">
     <div class="wrap">
       <div class="sec-head sec-head--center">
         <p class="eyebrow">Anatomie d'une colonie</p>
@@ -276,7 +276,7 @@
           <img src="images/world.svg" alt="Carte du monde localisant six phénomènes myrmécologiques">
         </div>
 
-        <div class="map__detail">
+        <div class="map__detail" role="status" aria-live="polite">
           <div>
             <p class="map__detail-species" id="mapSpecies">Crematogaster mimosae</p>
             <p class="map__detail-place" id="mapPlace">Laikipia, Kenya · savane d'acacias</p>
@@ -317,14 +317,21 @@
         </div>
 
         <div class="donut-card">
+          <!--
+            Cinq valeurs d'une même échelle, du gris ardoise au lime. Les cinq
+            teintes vives d'origine sortaient du système, qui n'autorise qu'un
+            seul accent : elles donnaient cinq catégories de même importance là
+            où il n'y a qu'une grandeur, la masse. Seules les fourmis, sujet du
+            site, reçoivent l'accent.
+          -->
           <div class="donut">
-            <svg viewBox="0 0 180 180" role="img" aria-label="Répartition de la biomasse animale terrestre en mégatonnes de carbone sec">
+            <svg viewBox="0 0 180 180" role="img" aria-label="Répartition de la biomasse animale terrestre en mégatonnes de carbone sec : bétail 100, humains 60, fourmis 12,3, mammifères sauvages 7, oiseaux sauvages 2">
               <circle cx="90" cy="90" r="70" fill="none" stroke="#ecece6" stroke-width="26"/>
-              <circle cx="90" cy="90" r="70" fill="none" stroke="#f5c542" stroke-width="26" stroke-dasharray="240.6 199.2" stroke-dashoffset="0"/>
-              <circle cx="90" cy="90" r="70" fill="none" stroke="#3aa8e0" stroke-width="26" stroke-dasharray="143.5 296.3" stroke-dashoffset="-242.6"/>
-              <circle cx="90" cy="90" r="70" fill="none" stroke="#2d8c3a" stroke-width="26" stroke-dasharray="27.8 412.0" stroke-dashoffset="-388.1"/>
-              <circle cx="90" cy="90" r="70" fill="none" stroke="#e44b4b" stroke-width="26" stroke-dasharray="15.0 424.8" stroke-dashoffset="-417.9"/>
-              <circle cx="90" cy="90" r="70" fill="none" stroke="#f0a0a0" stroke-width="26" stroke-dasharray="2.8 437.0" stroke-dashoffset="-434.9"/>
+              <circle cx="90" cy="90" r="70" fill="none" stroke="#4a4d43" stroke-width="26" stroke-dasharray="240.6 199.2" stroke-dashoffset="0"/>
+              <circle cx="90" cy="90" r="70" fill="none" stroke="#7a7f6c" stroke-width="26" stroke-dasharray="143.5 296.3" stroke-dashoffset="-242.6"/>
+              <circle cx="90" cy="90" r="70" fill="none" stroke="#d7eb80" stroke-width="26" stroke-dasharray="27.8 412.0" stroke-dashoffset="-388.1"/>
+              <circle cx="90" cy="90" r="70" fill="none" stroke="#a9ac9c" stroke-width="26" stroke-dasharray="15.0 424.8" stroke-dashoffset="-417.9"/>
+              <circle cx="90" cy="90" r="70" fill="none" stroke="#c9cbc0" stroke-width="26" stroke-dasharray="2.8 437.0" stroke-dashoffset="-434.9"/>
             </svg>
             <div class="donut__center">
               <div class="donut__value">12,3</div>
@@ -333,11 +340,11 @@
           </div>
 
           <ul class="legend">
-            <li><span class="legend__swatch" style="background:#f5c542"></span><span class="legend__name">Bétail</span><span class="legend__value">100 Mt</span></li>
-            <li><span class="legend__swatch" style="background:#3aa8e0"></span><span class="legend__name">Humains</span><span class="legend__value">60 Mt</span></li>
-            <li><span class="legend__swatch" style="background:#2d8c3a"></span><span class="legend__name">Fourmis</span><span class="legend__value">12,3 Mt</span></li>
-            <li><span class="legend__swatch" style="background:#e44b4b"></span><span class="legend__name">Mammifères sauvages</span><span class="legend__value">7 Mt</span></li>
-            <li><span class="legend__swatch" style="background:#f0a0a0"></span><span class="legend__name">Oiseaux sauvages</span><span class="legend__value">2 Mt</span></li>
+            <li><span class="legend__swatch" style="background:#4a4d43"></span><span class="legend__name">Bétail</span><span class="legend__value">100 Mt</span></li>
+            <li><span class="legend__swatch" style="background:#7a7f6c"></span><span class="legend__name">Humains</span><span class="legend__value">60 Mt</span></li>
+            <li><span class="legend__swatch" style="background:#d7eb80"></span><span class="legend__name">Fourmis</span><span class="legend__value">12,3 Mt</span></li>
+            <li><span class="legend__swatch" style="background:#a9ac9c"></span><span class="legend__name">Mammifères sauvages</span><span class="legend__value">7 Mt</span></li>
+            <li><span class="legend__swatch" style="background:#c9cbc0"></span><span class="legend__name">Oiseaux sauvages</span><span class="legend__value">2 Mt</span></li>
           </ul>
         </div>
       </div>
@@ -349,7 +356,7 @@
     <div class="wrap">
       <div class="sec-head sec-head--center">
         <p class="eyebrow">En vrac</p>
-        <h2>Sept faits difficiles à croire</h2>
+        <h2>Neuf faits difficiles à croire</h2>
       </div>
 
       <div class="facts">
@@ -381,6 +388,14 @@
           <p class="fact__value">500 000</p>
           <p class="fact__label">Le nombre d'animaux qu'une colonie de légionnaires peut tuer en une seule journée de chasse.</p>
         </div>
+        <div class="fact">
+          <p class="fact__value">6 000 km</p>
+          <p class="fact__label">La longueur de la super-colonie de fourmis d'Argentine qui court d'Espagne en Italie, sans un seul conflit interne.</p>
+        </div>
+        <div class="fact">
+          <p class="fact__value">2,5 millions</p>
+          <p class="fact__label">Le nombre de fourmis vivantes par être humain, une fois la population mondiale rapportée au comptage de 2022.</p>
+        </div>
       </div>
     </div>
   </section>
@@ -401,7 +416,7 @@
       <h3 id="sheetTitle"></h3>
       <p class="sheet__lede" id="sheetLede"></p>
       <ul class="sheet__points" id="sheetPoints"></ul>
-      <a class="btn btn--lime" id="sheetLink" href="#">Lire l'article complet</a>
+      <a class="btn btn--lime" id="sheetLink" href="acacia.html">Lire l'article complet</a>
     </div>
   </div>
 </div>
@@ -431,7 +446,7 @@
           <h4>Sur cette page</h4>
           <ul>
             <li><a href="#entrees">Les quatre entrées</a></li>
-            <li><a href="#">Retour en haut</a></li>
+            <li><a href="#top">Retour en haut</a></li>
           </ul>
         </div>
       </div>
@@ -444,6 +459,6 @@
   </div>
 </footer>
 
-<script src="js/main.js?v=6"></script>
+<script src="js/main.js?v=7"></script>
 </body>
 </html>

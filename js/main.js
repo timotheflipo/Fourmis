@@ -98,16 +98,33 @@
       list.appendChild(li);
     });
 
+    window.clearTimeout(closeTimer);
+    delete sheet.dataset.closing;
     sheet.dataset.open = 'true';
     document.body.style.overflow = 'hidden';
     sheet.querySelector('.sheet__close').focus();
   }
 
+  var closeTimer = null;
+
   function closeSheet() {
-    if (!sheet) return;
-    sheet.dataset.open = 'false';
+    if (!sheet || sheet.dataset.open !== 'true') return;
+
+    /*
+       Le panneau doit repartir par où il est venu. On marque la fermeture,
+       la CSS joue la transition inverse, et on ne retire réellement le
+       panneau qu'une fois celle-ci terminée. Le focus revient tout de suite :
+       il ne doit pas attendre une animation.
+    */
+    sheet.dataset.closing = 'true';
     document.body.style.overflow = '';
     if (lastFocus) lastFocus.focus();
+
+    window.clearTimeout(closeTimer);
+    closeTimer = window.setTimeout(function () {
+      sheet.dataset.open = 'false';
+      delete sheet.dataset.closing;
+    }, 170);
   }
 
   document.addEventListener('click', function (e) {
@@ -166,6 +183,10 @@
 
     compare.addEventListener('pointerdown', function (e) {
       if (e.target === range) return;
+      /* La capture garde le suivi actif même si le pointeur sort du cadre. */
+      if (compare.setPointerCapture) {
+        try { compare.setPointerCapture(e.pointerId); } catch (err) {}
+      }
       drag(e);
       window.addEventListener('pointermove', drag);
       window.addEventListener('pointerup', stop);
@@ -250,8 +271,12 @@
       b.style.top = p.y + '%';
       b.setAttribute('aria-expanded', 'false');
       b.setAttribute('aria-label', p.species + ' — ' + p.place);
+      /*
+         Uniquement au clic. Le `mouseenter` d'origine faisait défiler les six
+         fiches d'espèce dès qu'on traversait la carte à la souris : le texte,
+         le lieu et les trois chiffres se remplaçaient à chaque pastille.
+      */
       b.addEventListener('click', function () { select(i); });
-      b.addEventListener('mouseenter', function () { select(i); });
       canvas.appendChild(b);
       pins.push(b);
     });
@@ -357,7 +382,7 @@
   var STAGGER = 0.07; /* décalage de fenêtre entre voisins d'une même grille */
 
   /* Blocs autonomes. */
-  var SOLO = ['.sec-head', '.figure-wide', '.map', '.donut-card', '.split > div'];
+  var SOLO = ['.sec-head', '.figure-wide', '.figure-bleed', '.map', '.donut-card', '.split > div'];
 
   /* Grilles dont les enfants se dévoilent en cascade. */
   var GRIDS = ['.cards', '.castes', '.facts', '.next-cards'];
