@@ -292,7 +292,7 @@ p { margin: 0; }
 }
 .nav__link:hover { color: var(--ink); }
 
-.header:not(.header--solid) .nav__link { color: rgba(255, 255, 255, 0.85); }
+.header:not(.header--solid) .nav__link { color: rgba(255, 255, 255, 0.92); }
 .header:not(.header--solid) .nav__link:hover { color: var(--white); }
 
 /* ---------- Hero ---------- */
@@ -315,24 +315,46 @@ p { margin: 0; }
   z-index: 0;
 }
 
+/*
+   La photo est un macro très dense : à l'échelle « cover », chaque fourmi ne
+   faisait que quelques pixels et l'image se lisait comme du bruit sombre.
+   Le zoom ne sert pas à décorer, il sert à rendre le sujet reconnaissable —
+   ce sont les formes qui doivent être grandes, pas l'image qui doit être
+   claire. Le cadrage à 42 % amène la seule bande vraiment nette de la photo
+   sous le bloc de texte plutôt que derrière lui.
+*/
 .hero__media img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: center 45%;
+  object-position: center 42%;
+  transform: scale(2);
+  transform-origin: center 42%;
+  filter: brightness(1.4) contrast(1.28);
 }
 
 /*
-   Voile du hero. L'ancienne image était un paysage avec un ciel clair : le
-   creux à 0.30 au milieu tombait pile sur l'horizon et le texte y descendait
-   à 2,68:1 de contraste. La texture qui l'a remplacée est sombre et sans
-   zone claire imprévisible, donc un voile plus léger et plus régulier suffit.
+   Voile en bande plutôt qu'en dégradé uniforme. Un voile régulier oblige à
+   choisir entre un texte lisible et une photo lisible ; celui-ci est fort là
+   où il y a du texte (10 % à 58 %) et s'ouvre à 0,34 juste en dessous, dans
+   la bande la plus nette de la photo. C'est le seul endroit où l'on voit
+   vraiment les fourmis, et il ne porte aucun texte.
+
+   Mesuré sur le rendu composité, au pire point de chaque bloc :
+   navigation 6,3:1 · surtitre 6,6:1 · titre 7,0:1 · accroche 7,1:1.
 */
 .hero__media::after {
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, rgba(16, 18, 14, 0.62) 0%, rgba(16, 18, 14, 0.50) 45%, rgba(16, 18, 14, 0.66) 100%);
+  background: linear-gradient(180deg,
+    rgba(16, 18, 14, 0.68) 0%,
+    rgba(16, 18, 14, 0.66) 10%,
+    rgba(16, 18, 14, 0.70) 22%,
+    rgba(16, 18, 14, 0.70) 58%,
+    rgba(16, 18, 14, 0.34) 74%,
+    rgba(16, 18, 14, 0.44) 86%,
+    rgba(16, 18, 14, 0.58) 100%);
 }
 
 .hero__inner {
@@ -359,7 +381,7 @@ p { margin: 0; }
 .hero__lede {
   margin: 24px auto 0;
   max-width: 620px;
-  color: rgba(255, 255, 255, 0.9);
+  color: var(--white);
   font-size: var(--text-subheading);
 }
 
@@ -1550,7 +1572,6 @@ p { margin: 0; }
     padding: 0;
     display: grid;
     gap: 2px;
-    counter-reset: toc;
   }
 
   .toc__link {

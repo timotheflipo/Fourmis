@@ -495,6 +495,9 @@
     window.addEventListener('scroll', schedule, { passive: true });
     window.addEventListener('resize', schedule);
     window.addEventListener('load', schedule);
+    document.addEventListener('visibilitychange', function () {
+      if (!document.hidden) schedule();
+    });
     schedule();
   }
 
@@ -610,6 +613,9 @@
     window.addEventListener('scroll', scheduleToc, { passive: true });
     window.addEventListener('resize', function () { measure(); scheduleToc(); });
     window.addEventListener('load', function () { measure(); scheduleToc(); });
+    document.addEventListener('visibilitychange', function () {
+      if (!document.hidden) { measure(); scheduleToc(); }
+    });
   }
 
   /* ---------------------------------------------------------
