@@ -17,12 +17,12 @@
       img: 'images/photos/girafe-acacia.jpg',
       alt: 'Girafe broutant les branches hautes d\'un acacia',
       href: 'acacia.html',
-      lede: 'Une fourmi d\'un centimètre protège un arbre contre un animal de six tonnes — ' +
+      lede: 'Une fourmi d\'un centimètre protège un arbre contre un animal de six tonnes ' +
             'et, sans intention ni conscience, tient la savane entière en équilibre.',
       points: [
         '<strong>Le pacte.</strong> <em>Crematogaster mimosae</em> loge dans les galles épineuses de l\'acacia. En échange du gîte, elle mord l\'intérieur de la trompe des éléphants et projette de l\'acide formique.',
         '<strong>Le sifflet.</strong> Les trous percés dans les galles font chanter l\'arbre au vent. L\'éléphant apprend à associer ce sifflement aux morsures, et évite les arbres habités.',
-        '<strong>L\'intruse.</strong> La fourmi à grosse tête, invasive, tue les <em>Crematogaster</em> et dévore leur couvain — mais ne défend pas l\'arbre.',
+        '<strong>L\'intruse.</strong> La fourmi à grosse tête, invasive, tue les <em>Crematogaster</em> et dévore leur couvain, mais ne défend pas l\'arbre.',
         '<strong>L\'effet domino.</strong> Sans garde, les acacias sont broutés, la savane s\'ouvre, et les lions perdent le couvert dont ils ont besoin pour chasser le zèbre.'
       ]
     },
@@ -32,12 +32,12 @@
       img: 'images/photos/fourmi-macro.jpg',
       alt: 'Portrait macro de la tête d\'une fourmi',
       href: 'superorganisme.html',
-      lede: 'La colonie n\'est pas un groupe d\'individus qui coopèrent. C\'est un corps, ' +
-            'et les fourmis en sont les cellules — remplaçables, spécialisées, mortelles.',
+      lede: 'La colonie fonctionne comme un corps unique, ' +
+            'dont les fourmis sont les cellules : remplaçables, spécialisées, mortelles.',
       points: [
         '<strong>Des organes, pas des métiers.</strong> Les ouvrières font circuler la nourriture de bouche à bouche comme un système circulatoire ; les soldats jouent le rôle d\'un système immunitaire.',
         '<strong>Une durée de vie par fonction.</strong> Trente ans pour la reine, trois ans pour l\'ouvrière, quelques semaines pour le mâle : la longévité suit l\'utilité.',
-        '<strong>Une immunité collective.</strong> Les colonies pratiquent une forme de vaccination sociale — le contact avec des congénères exposées protège les naïves.',
+        '<strong>Une immunité collective.</strong> Les colonies pratiquent une forme de vaccination sociale : le contact avec des congénères exposées protège les naïves.',
         '<strong>Un corps qui s\'assemble.</strong> Les légionnaires bâtissent ponts et radeaux avec leurs propres corps, structures qui s\'ajustent seules à la taille du vide à franchir.'
       ]
     },
@@ -47,10 +47,10 @@
       img: 'images/photos/fourmi-tige.jpg',
       alt: 'Fourmis progressant le long d\'une tige verte',
       href: 'intelligence.html',
-      lede: 'Aucune fourmi ne connaît le plan d\'ensemble. L\'intelligence n\'est pas dans la tête ' +
-            'd\'un individu : elle est dans le système lui-même.',
+      lede: 'Aucune fourmi ne connaît le plan d\'ensemble. L\'intelligence est dans le ' +
+            'système lui-même, pas dans la tête d\'un individu.',
       points: [
-        '<strong>La stigmergie.</strong> Les fourmis ne se donnent pas d\'ordres — elles réagissent aux traces laissées par les précédentes. Une trace en appelle une autre, et l\'architecture émerge.',
+        '<strong>La stigmergie.</strong> Les fourmis ne se donnent pas d\'ordres : elles réagissent aux traces laissées par les précédentes. Une trace en appelle une autre, et l\'architecture émerge.',
         '<strong>Le quorum.</strong> Pour choisir un nid, les éclaireuses ne basculent en transport de masse qu\'une fois un seuil d\'individus atteint sur place. Le groupe décide mieux que ses membres.',
         '<strong>Les seuils de réponse.</strong> Personne n\'assigne les tâches. Chaque fourmi a son propre seuil de déclenchement, et l\'équilibre s\'ajuste tout seul.',
         '<strong>La faille.</strong> Ce système peut se piéger lui-même : coupées de la piste principale, des fourmis tournent en cercle jusqu\'à l\'épuisement. C\'est la spirale de la mort.'
@@ -62,12 +62,12 @@
       img: 'images/photos/fourmi-trou.jpg',
       alt: 'Fourmi postée à l\'entrée d\'une galerie',
       href: 'guerre.html',
-      lede: 'Sous nos pieds se joue un conflit permanent pour les niches écologiques — ' +
+      lede: 'Sous nos pieds se joue un conflit permanent pour les niches écologiques : ' +
             'des colonnes de chasse de cent mètres aux super-colonies qui couvrent des continents.',
       points: [
         '<strong>Les légionnaires.</strong> Environ 200 espèces nomades, sans nid fixe, qui progressent en colonnes et peuvent tuer 500 000 animaux par jour.',
         '<strong>La trêve entre égaux.</strong> Deux colonies de légionnaires qui se croisent s\'évitent : l\'affrontement serait mutuellement destructeur.',
-        '<strong>Les défenses.</strong> Évacuation d\'urgence avec le couvain, ou « bunkers vivants » — des ouvrières à tête carrée qui bouchent physiquement l\'entrée du nid.',
+        '<strong>Les défenses.</strong> Évacuation d\'urgence avec le couvain, ou « bunkers vivants » : des ouvrières à tête carrée qui bouchent physiquement l\'entrée du nid.',
         '<strong>Les super-colonies.</strong> La fourmi d\'Argentine forme en Europe une colonie unique de milliers de kilomètres, dont les membres ne se combattent jamais entre eux.'
       ]
     }
