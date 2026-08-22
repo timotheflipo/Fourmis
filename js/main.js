@@ -59,8 +59,8 @@
     guerre: {
       eyebrow: 'Conflit · 100 millions d\'années',
       title: 'La guerre mondiale',
-      img: 'images/photos/fourmis-pont.jpg',
-      alt: 'Fourmis agrippées les unes aux autres sur une tige',
+      img: 'images/photos/fourmi-trou.jpg',
+      alt: 'Fourmi postée à l\'entrée d\'une galerie',
       href: 'guerre.html',
       lede: 'Sous nos pieds se joue un conflit permanent pour les niches écologiques — ' +
             'des colonnes de chasse de cent mètres aux super-colonies qui couvrent des continents.',

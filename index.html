@@ -8,8 +8,8 @@
 <meta name="robots" content="noindex, nofollow">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=5">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css?v=6">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%23333'/><circle cx='50' cy='30' r='11' fill='%23d7eb80'/><circle cx='50' cy='52' r='9' fill='%23d7eb80'/><circle cx='50' cy='74' r='13' fill='%23d7eb80'/></svg>">
 </head>
 <body>
@@ -35,7 +35,7 @@
   <!-- ============ Hero ============ -->
   <section class="hero">
     <div class="hero__media">
-      <img src="images/photos/acacia-savane.jpg" alt="Acacias dispersés sur une savane d'herbes dorées" fetchpriority="high">
+      <img src="images/photos/hero-colonie.jpg" alt="Amas dense de fourmis vu de très près, une ouvrière nette au centre" fetchpriority="high">
     </div>
 
     <div class="hero__inner">
@@ -94,7 +94,7 @@
 
         <button class="card" type="button" data-topic="acacia">
           <div class="card__media">
-            <img src="images/photos/acacia-epines.jpg" alt="Branche d'acacia hérissée d'épines" loading="lazy">
+            <img src="images/photos/girafe-acacia.jpg" alt="Girafe broutant les branches hautes d'un acacia" loading="lazy">
             <span class="card__badge">Terrain</span>
           </div>
           <h3 class="card__title">L'acacia siffleur</h3>
@@ -110,7 +110,7 @@
 
         <button class="card" type="button" data-topic="superorganisme">
           <div class="card__media">
-            <img src="images/photos/hero-colonie.jpg" alt="Amas dense de fourmis en noir et blanc" loading="lazy">
+            <img src="images/photos/fourmi-macro.jpg" alt="Portrait macro de la tête d'une fourmi" loading="lazy">
             <span class="card__badge">Concept</span>
           </div>
           <h3 class="card__title">Le superorganisme</h3>
@@ -126,7 +126,7 @@
 
         <button class="card" type="button" data-topic="intelligence">
           <div class="card__media">
-            <img src="images/photos/colonne.jpg" alt="File de fourmis progressant sur une branche" loading="lazy">
+            <img src="images/photos/fourmi-tige.jpg" alt="Fourmis progressant en file le long d'une tige" loading="lazy">
             <span class="card__badge">Mécanique</span>
           </div>
           <h3 class="card__title">L'intelligence sans cerveau</h3>
@@ -142,7 +142,7 @@
 
         <button class="card" type="button" data-topic="guerre">
           <div class="card__media">
-            <img src="images/photos/fourmis-nourriture.jpg" alt="Fourmis massées sur une proie" loading="lazy">
+            <img src="images/photos/fourmi-trou.jpg" alt="Fourmi postée à l'entrée d'une galerie" loading="lazy">
             <span class="card__badge">Conflit</span>
           </div>
           <h3 class="card__title">La guerre mondiale</h3>
@@ -225,31 +225,38 @@
         </p>
       </div>
 
+      <!--
+        Table des castes. Les vignettes dessinées ont été retirées : elles
+        n'étaient pas à la même échelle les unes que les autres, et celle de
+        la reine portait une couronne — soit exactement le contresens que ce
+        site passe six mille mots à corriger. L'espérance de vie se lit mieux
+        en chiffres alignés qu'en illustrations.
+      -->
       <div class="castes">
         <div class="caste">
-          <img src="images/avatars/reine.png" alt="" loading="lazy">
+          <p class="caste__span">30 ans</p>
           <p class="caste__name">La reine</p>
-          <p class="caste__meta">Jusqu'à 30 ans · s'accouple une seule fois, puis pond toute sa vie</p>
+          <p class="caste__meta">S'accouple une seule fois lors du vol nuptial, stocke le sperme, puis pond jusqu'à sa mort. Elle ne commande rien.</p>
         </div>
         <div class="caste">
-          <img src="images/avatars/ouvriere.png" alt="" loading="lazy">
+          <p class="caste__span">3 ans</p>
           <p class="caste__name">L'ouvrière</p>
-          <p class="caste__meta">≈ 3 ans · fourrage, entretien des galeries, soin au couvain</p>
+          <p class="caste__meta">Fourrage, galeries, soin au couvain. Elle change de métier avec l'âge, sans que personne le lui demande.</p>
         </div>
         <div class="caste">
-          <img src="images/avatars/soldat.png" alt="" loading="lazy">
+          <p class="caste__span">3 ans</p>
           <p class="caste__name">Le soldat</p>
-          <p class="caste__meta">Tête hypertrophiée · découpe les proies, bouche l'entrée du nid</p>
+          <p class="caste__meta">Tête hypertrophiée, mandibules démesurées. Découpe les proies et bouche l'entrée du nid avec son propre crâne.</p>
         </div>
         <div class="caste">
-          <img src="images/avatars/male.png" alt="" loading="lazy">
+          <p class="caste__span">Semaines</p>
           <p class="caste__name">Le mâle</p>
-          <p class="caste__meta">Quelques semaines · féconde lors du vol nuptial, puis meurt</p>
+          <p class="caste__meta">Né d'un œuf non fécondé, il ne travaille jamais, féconde une fois et meurt. La colonie ne le nourrit qu'un été.</p>
         </div>
         <div class="caste">
-          <img src="images/avatars/coupe-feuille.png" alt="" loading="lazy">
+          <p class="caste__span">50 Ma</p>
           <p class="caste__name">L'agricultrice</p>
-          <p class="caste__meta">Coupe-feuille · cultive un champignon depuis ~50 millions d'années</p>
+          <p class="caste__meta">Chez les coupe-feuille, une caste entière vouée à un champignon cultivé depuis cinquante millions d'années.</p>
         </div>
       </div>
     </div>
@@ -439,6 +446,6 @@
   </div>
 </footer>
 
-<script src="js/main.js?v=5"></script>
+<script src="js/main.js?v=6"></script>
 </body>
 </html>

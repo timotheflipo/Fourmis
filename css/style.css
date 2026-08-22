@@ -13,17 +13,30 @@
   --warm-mist: #f8f8f6;
   --linen: #f0f0eb;
   --stone: #6c6c6c;
-  --ash: #bebeb9;
+  --ash: #bebeb9;      /* filets internes, décoratifs */
   --silver: #b6b6b6;
 
-  /* Typographie */
+  /*
+     Contour porteur d'information : c'est la seule chose qui sépare une carte
+     de son fond. `--ash` ne donnait que 1,87:1 sur blanc, sous le seuil de
+     3:1 exigé pour un élément non textuel. Celui-ci est mesuré à 3,03:1.
+  */
+  --rule: #94948f;
+
+  /*
+     Typographie — une seule famille.
+     La hiérarchie vient de la graisse, de la taille et de l'interlettrage,
+     pas d'une seconde police. Deux familles pour quatre articles, c'était
+     une complication sans contrepartie.
+  */
   --font-body: 'Inter', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --font-display: 'Space Grotesk', 'Inter Tight', ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-display: var(--font-body);
 
   /* Échelle */
   --text-caption: 12px;
   --text-body-sm: 14px;
   --text-body: 16px;
+  --text-prose: 17px;      /* corps des articles, un cran au-dessus de l'interface */
   --text-subheading: 18px;
   --text-heading-sm: 20px;
   --text-heading: 24px;
@@ -43,6 +56,18 @@
   --radius-pill: 9999px;
 
   --shadow-xl: rgba(0, 0, 0, 0.2) 0px 11px 33px 0px;
+
+  /*
+     Mouvement. Trois courbes maison quasi identiques traînaient dans le
+     fichier, tapées à la main à six endroits. Deux tokens suffisent :
+     `out` pour tout ce qui entre ou réagit, `in-out` pour ce qui se déplace
+     d'un point à un autre à l'écran.
+  */
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+  --dur-press: 140ms;   /* retour à l'appui */
+  --dur-hover: 180ms;   /* survol : vu des dizaines de fois, doit rester bref */
+  --dur-panel: 240ms;   /* ouverture d'un panneau */
 }
 
 /* ---------- Base ---------- */
@@ -69,18 +94,39 @@ img { max-width: 100%; display: block; }
 
 a { color: inherit; }
 
+/*
+   L'interlettrage dépend de la taille : plus les lettres grossissent, plus
+   l'espace optique entre elles paraît grand. Une valeur unique pour tous les
+   titres est forcément fausse quelque part — d'où une valeur par palier.
+*/
 h1, h2, h3 {
   font-family: var(--font-display);
-  font-weight: 700;
-  letter-spacing: -0.01em;
+  font-weight: 800;
   margin: 0;
 }
 
-h1 { font-size: var(--text-display-lg); line-height: 1.1; }
-h2 { font-size: var(--text-display); line-height: 1.1; }
-h3 { font-size: var(--text-heading); line-height: 1.3; }
+h1 { font-size: var(--text-display-lg); line-height: 1.06; letter-spacing: -0.025em; }
+h2 { font-size: var(--text-display);    line-height: 1.08; letter-spacing: -0.022em; }
+h3 { font-size: var(--text-heading);    line-height: 1.3;  letter-spacing: -0.012em; }
 
 p { margin: 0; }
+
+/*
+   Les valeurs chiffrées ne sont pas des titres, elles n'héritaient donc
+   d'aucun interlettrage négatif — seulement du +0.007em du corps de texte.
+   Résultat : des nombres en gros caractères espacés comme du texte courant.
+   `tabular-nums` empêche en plus les chiffres de danser d'une fiche à l'autre.
+*/
+.stat__value,
+.fact__value,
+.donut__value,
+.figure-row__value,
+.map__detail-species {
+  letter-spacing: -0.018em;
+  font-variant-numeric: tabular-nums;
+}
+
+::selection { background: var(--lime); color: var(--ink); }
 
 .wrap {
   width: 100%;
@@ -156,12 +202,16 @@ p { margin: 0; }
   gap: 24px;
 }
 
+/*
+   Quatorze caractères en capitales grasses mangeaient un tiers de la barre.
+   En casse normale et en interlettrage serré, le mot tient dans la moitié
+   de la place et laisse respirer la navigation.
+*/
 .wordmark {
   font-family: var(--font-body);
-  font-size: var(--text-heading-sm);
-  font-weight: 700;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
+  font-size: var(--text-subheading);
+  font-weight: 800;
+  letter-spacing: -0.022em;
   text-decoration: none;
   color: var(--ink);
   white-space: nowrap;
@@ -212,14 +262,20 @@ p { margin: 0; }
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: center 62%;
+  object-position: center 45%;
 }
 
+/*
+   Voile du hero. L'ancienne image était un paysage avec un ciel clair : le
+   creux à 0.30 au milieu tombait pile sur l'horizon et le texte y descendait
+   à 2,68:1 de contraste. La texture qui l'a remplacée est sombre et sans
+   zone claire imprévisible, donc un voile plus léger et plus régulier suffit.
+*/
 .hero__media::after {
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, rgba(20, 26, 14, 0.52) 0%, rgba(20, 26, 14, 0.30) 42%, rgba(20, 26, 14, 0.58) 100%);
+  background: linear-gradient(180deg, rgba(16, 18, 14, 0.62) 0%, rgba(16, 18, 14, 0.50) 45%, rgba(16, 18, 14, 0.66) 100%);
 }
 
 .hero__inner {
@@ -240,7 +296,6 @@ p { margin: 0; }
 
 .hero h1 {
   color: var(--white);
-  font-weight: 700;
   text-wrap: balance;
 }
 
@@ -445,11 +500,18 @@ p { margin: 0; }
   background: var(--linen);
 }
 
+/*
+   Étalonnage commun aux quatre vignettes. Même en ayant choisi des photos
+   dans la même plage de luminosité, leurs saturations vont du simple au
+   triple. Cette correction unique les ramène dans le même registre, sans
+   valeur particulière image par image — sinon ce n'est plus une série.
+*/
 .card__media img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 0.5s cubic-bezier(0.2, 0.6, 0.2, 1);
+  filter: saturate(0.78) contrast(1.06);
+  transition: transform 0.24s var(--ease-out);
 }
 
 .card:hover .card__media img,
@@ -857,17 +919,32 @@ p { margin: 0; }
 
 .caste {
   background: var(--white);
-  border: 1px solid var(--ash);
+  border: 1px solid var(--rule);
   border-radius: var(--radius-card);
-  padding: var(--card-padding);
-  text-align: center;
+  padding: 26px 24px 24px;
+  display: flex;
+  flex-direction: column;
 }
 
-.caste img { width: 88px; height: 88px; margin: 0 auto 12px; object-fit: contain; }
+/* La durée de vie ouvre la fiche : c'est l'information qui classe les castes. */
+.caste__span {
+  font-size: var(--text-heading);
+  font-weight: 800;
+  letter-spacing: -0.022em;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  color: var(--ink);
+}
 
-.caste__name { font-size: var(--text-body); font-weight: 700; }
+.caste__name {
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid var(--ash);
+  font-size: var(--text-body);
+  font-weight: 700;
+}
 
-.caste__meta { margin-top: 6px; font-size: var(--text-body-sm); color: var(--stone); }
+.caste__meta { margin-top: 8px; font-size: var(--text-body-sm); color: var(--stone); }
 
 /* ---------- Faits en vrac ---------- */
 
@@ -882,7 +959,7 @@ p { margin: 0; }
   background: var(--white);
   border-radius: var(--radius-card);
   padding: 32px;
-  border: 1px solid var(--ash);
+  border: 1px solid var(--rule);
 }
 
 .fact__value {
@@ -966,7 +1043,7 @@ p { margin: 0; }
 }
 
 /* Aligné sur la colonne de lecture pour que le titre et le texte partagent la même marge. */
-.article-hero__inner { position: relative; z-index: 1; max-width: 720px; margin: 0 auto; }
+.article-hero__inner { position: relative; z-index: 1; max-width: 640px; margin: 0 auto; }
 .article-hero__inner .eyebrow { color: var(--lime); }
 .article-hero h1 { color: var(--white); font-size: var(--text-display); text-wrap: balance; }
 .article-hero__lede { margin-top: 20px; color: rgba(255, 255, 255, 0.9); font-size: var(--text-subheading); max-width: 640px; }
@@ -981,40 +1058,67 @@ p { margin: 0; }
 .breadcrumb a { text-decoration: none; border-radius: var(--radius-link); }
 .breadcrumb a:hover { text-decoration: underline; }
 
-.prose { max-width: 720px; margin: 0 auto; }
+/*
+   Colonne de lecture. L'ancien réglage — 720 px à 1,4 d'interligne — venait du
+   token d'interface appliqué tel quel à des articles de 1 300 à 2 000 mots.
+   Plus la ligne est longue, plus l'œil a besoin d'interligne pour retrouver le
+   début de la suivante : les deux valeurs allaient dans le mauvais sens.
+*/
+.prose { max-width: 640px; margin: 0 auto; }
 
-.prose > * + * { margin-top: 24px; }
+.prose > * + * { margin-top: 26px; }
 
 .prose h2 {
   font-size: var(--text-heading-lg);
   line-height: 1.15;
-  margin-top: 64px;
+  margin-top: 68px;
   text-wrap: balance;
 }
 
 .prose h3 { font-size: var(--text-heading); margin-top: 40px; }
 
-.prose p { color: var(--stone); }
+.prose p {
+  color: var(--stone);
+  font-size: var(--text-prose);
+  line-height: 1.62;
+  letter-spacing: 0;
+  text-wrap: pretty;
+}
 
 .prose strong { color: var(--ink); font-weight: 600; }
 
 .prose em { font-style: italic; }
 
-.prose ul { margin: 0; padding-left: 22px; display: grid; gap: 12px; color: var(--stone); }
+.prose ul {
+  margin: 0;
+  padding-left: 22px;
+  display: grid;
+  gap: 12px;
+  color: var(--stone);
+  font-size: var(--text-prose);
+  line-height: 1.62;
+  letter-spacing: 0;
+}
 
 .prose li::marker { color: var(--lime-deep); }
 
 .prose a { color: var(--ink); text-decoration: underline; text-underline-offset: 3px; border-radius: var(--radius-link); }
 .prose a:hover { color: var(--stone); }
 
+/*
+   Citation détachée. Pas de filet coloré à gauche : la taille, la graisse et
+   l'air autour suffisent à la sortir du flux, et un liseré d'accent sur une
+   carte est devenu le tic graphique le plus daté du web.
+*/
 .pull {
-  border-left: 3px solid var(--lime);
-  padding: 4px 0 4px 24px;
-  font-family: var(--font-display);
-  font-size: var(--text-heading);
-  line-height: 1.35;
+  padding: 0;
+  font-size: var(--text-heading-lg);
+  font-weight: 800;
+  line-height: 1.22;
+  letter-spacing: -0.022em;
   color: var(--ink);
-  margin-top: 40px;
+  text-wrap: balance;
+  margin: 56px 0;
 }
 
 .callout {
