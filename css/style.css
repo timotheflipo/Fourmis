@@ -191,27 +191,27 @@ p { margin: 0; }
    jusqu'au bout de sa course sans toucher le bord de la page.
 */
 .figure-compare {
-  max-width: 880px;
-  margin: 56px auto 0;
-  padding: 16px;
-  background: var(--white);
-  border-radius: calc(var(--radius-card) + 8px);
+  /*
+     La figure occupe toute la colonne de contenu : ses bords tombent
+     exactement sur ceux du bloc texte / image au-dessus.
+
+     Le passe-partout blanc a été retiré. Il servait à détacher le
+     comparateur quand il courait d'un bord à l'autre de l'écran, mais ses
+     16 px de marge intérieure rognaient d'autant la photo, qui n'arrivait
+     alors plus au niveau de celle de l'éléphant juste au-dessus. Un liseré
+     tient le même rôle sans occuper la moindre place dans la mise en page.
+  */
+  margin: 56px 0 0;
 }
 
 .figure-compare .compare {
   aspect-ratio: 16 / 9;
   border-radius: var(--radius-card);
-}
-
-.figure-compare .figure__caption {
-  max-width: none;
-  margin: 0;
-  padding: 16px 12px 6px;
+  box-shadow: 0 0 0 1px rgba(51, 51, 51, 0.10);
 }
 
 @media (max-width: 720px) {
-  .figure-compare { margin-top: 40px; padding: 10px; }
-  .figure-compare .figure__caption { padding: 14px 8px 4px; }
+  .figure-compare { margin-top: 40px; }
 }
 
 /* ---------- Boutons ---------- */
