@@ -305,7 +305,7 @@ p { margin: 0; }
      après la sortie réelle de la section.
   */
   --hero-h: 100vh;
-  --hero-slack: 14%;   /* marge de glissement de la photo, voir .hero__media */
+  --hero-slack: 26%;   /* marge de glissement de la photo, voir .hero__media */
 
   position: relative;
   min-height: var(--hero-h);
@@ -562,8 +562,10 @@ p { margin: 0; }
    en cours. Ailleurs, il ferait payer un coût permanent pour une impression
    qui s'épuise au deuxième défilement.
 
-   Écart total à la sortie de la section : 11 vh pour la photo vers le bas,
-   7 vh pour le contenu vers le haut, soit 18 vh de séparation apparente.
+   Écart total à la sortie de la section : 20 vh pour la photo vers le bas,
+   10 vh pour le contenu vers le haut, soit 30 vh de séparation apparente.
+   La photo parcourt donc 80 vh quand la page en parcourt 100 : un rapport
+   de 0,8, assez franc pour se lire sans que le fond ait l'air de patiner.
 
    `animation-timeline: scroll()` fait tourner tout ça sur le compositeur,
    hors du fil principal — contrairement à un écouteur de défilement en
@@ -611,7 +613,7 @@ p { margin: 0; }
 }
 
 @keyframes hero-recule {
-  to { transform: translateY(11vh); }
+  to { transform: translateY(20vh); }
 }
 
 /*
@@ -620,7 +622,7 @@ p { margin: 0; }
    qu'une fois le bloc engagé dans sa sortie.
 */
 @keyframes hero-avance {
-  to { transform: translateY(-7vh); }
+  to { transform: translateY(-10vh); }
 }
 
 /*
