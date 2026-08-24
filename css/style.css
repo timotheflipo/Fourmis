@@ -1202,28 +1202,52 @@ p { margin: 0; }
 
 /* ---------- Faits en vrac ---------- */
 
+/*
+   Un seul panneau divisé en neuf cases, et non neuf boîtes posées côte à côte.
+
+   Les fiches étaient des rectangles blancs cernés d'un trait : un idiome qui
+   n'existe nulle part ailleurs sur le site. La carte du monde et l'anneau de
+   biomasse sont des aplats `warm-mist` arrondis, sans bordure — c'est le
+   vocabulaire de la page, et c'est celui qu'on reprend ici. Neuf boîtes
+   cernées alignées en trois par trois donnaient en prime la silhouette d'une
+   grille de cartes-fonctionnalités, ce que ces chiffres ne sont pas.
+
+   Les filets ne sont pas des bordures mais l'écart de la grille : le fond du
+   conteneur transparaît sur un pixel entre les cases. Les traits sont donc
+   partagés, jamais doublés, et il n'y en a aucun sur le pourtour.
+*/
 .facts {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 24px;
+  gap: 1px;
+  background: var(--ash);
+  border-radius: var(--radius-card);
+  overflow: hidden;
   margin-top: 48px;
 }
 
 .fact {
-  background: var(--white);
-  border-radius: var(--radius-card);
-  padding: 32px;
-  border: 1px solid var(--rule);
+  background: var(--warm-mist);
+  padding: 30px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
 .fact__value {
-  font-family: var(--font-display);
   font-size: var(--text-heading-lg);
-  font-weight: 700;
+  font-weight: 800;
   line-height: 1;
+  color: var(--ink);
+  text-wrap: balance;
 }
 
-.fact__label { margin-top: 14px; font-size: var(--text-body-sm); color: var(--stone); }
+.fact__label {
+  font-size: var(--text-body-sm);
+  line-height: 1.5;
+  color: var(--stone);
+  text-wrap: pretty;
+}
 
 /* ---------- Pied de page ---------- */
 
@@ -1597,11 +1621,14 @@ p { margin: 0; }
 @media (hover: hover) and (pointer: fine) {
   .card:hover { transform: translateY(-3px); }
 
-  .caste:hover,
-  .fact:hover {
-    transform: translateY(-3px);
-    border-color: var(--ink);
-  }
+  .caste:hover { transform: translateY(-3px); border-color: var(--ink); }
+
+  /*
+     Une case ne peut pas se soulever : elle déchirerait les filets qu'elle
+     partage avec ses voisines. C'est le fond qui s'éclaircit, ce qui reste
+     dans la logique d'aplats du panneau.
+  */
+  .fact:hover { background: var(--white); }
 
   .legend li:hover { transform: translateX(3px); }
 
@@ -1763,6 +1790,7 @@ p { margin: 0; }
   .cards { grid-template-columns: repeat(2, 1fr); gap: 28px; }
   .castes { grid-template-columns: repeat(3, 1fr); }
   .facts { grid-template-columns: repeat(2, 1fr); }
+  .facts .fact:last-child { grid-column: 1 / -1; }
   .split { grid-template-columns: 1fr; gap: 40px; }
   .split--flip .split__media { order: 0; }
   .map__detail { grid-template-columns: 1fr; gap: 28px; }
@@ -1830,7 +1858,7 @@ p { margin: 0; }
   }
 
   .card:hover, .card:focus-visible,
-  .caste:hover, .fact:hover,
+  .caste:hover,
   .legend li:hover,
   .split__media:hover img,
   .card:hover .card__media img,
