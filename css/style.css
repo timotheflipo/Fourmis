@@ -178,22 +178,40 @@ p { margin: 0; }
   .section--dark .caste:hover { border-color: var(--lime); }
 }
 
-/* La figure déborde la colonne de texte pour rompre la grille. */
-.figure-bleed {
-  margin: 64px calc(50% - 50vw) 0;
-  width: 100vw;
-  max-width: 100vw;
-}
-.figure-bleed .compare { border-radius: 0; aspect-ratio: 21 / 9; }
-.figure-bleed .figure__caption {
-  max-width: 760px;
-  margin: 20px auto 0;
-  padding: 0 24px;
+/*
+   Comparateur avant / après, présenté comme une figure encadrée.
+
+   Il occupait auparavant toute la largeur de la fenêtre, bord à bord. Ce
+   traitement convient à une image d'ambiance, pas à un dispositif qu'on
+   manipule : sans marge ni contour, rien ne signalait que l'objet était
+   interactif, et le curseur venait buter contre les bords de l'écran.
+
+   Le passe-partout blanc sur le bandeau de lin fait le travail d'un cadre :
+   il détache la figure du fond, et donne au curseur de la place pour aller
+   jusqu'au bout de sa course sans toucher le bord de la page.
+*/
+.figure-compare {
+  max-width: 880px;
+  margin: 56px auto 0;
+  padding: 16px;
+  background: var(--white);
+  border-radius: calc(var(--radius-card) + 8px);
 }
 
-@media (max-width: 1024px) {
-  .figure-bleed { margin-top: 48px; }
-  .figure-bleed .compare { aspect-ratio: 16 / 9; }
+.figure-compare .compare {
+  aspect-ratio: 16 / 9;
+  border-radius: var(--radius-card);
+}
+
+.figure-compare .figure__caption {
+  max-width: none;
+  margin: 0;
+  padding: 16px 12px 6px;
+}
+
+@media (max-width: 720px) {
+  .figure-compare { margin-top: 40px; padding: 10px; }
+  .figure-compare .figure__caption { padding: 14px 8px 4px; }
 }
 
 /* ---------- Boutons ---------- */
@@ -1376,8 +1394,6 @@ p { margin: 0; }
 .prose figure { margin: 48px 0 0; }
 .prose figure img { border-radius: var(--radius-card); }
 .prose figcaption { margin-top: 12px; font-size: var(--text-body-sm); color: var(--stone); }
-
-.figure-wide { max-width: 1000px; margin: 56px auto 0; }
 
 /* ---------- Simulation de stigmergie ---------- */
 

@@ -382,7 +382,7 @@
   var STAGGER = 0.07; /* décalage de fenêtre entre voisins d'une même grille */
 
   /* Blocs autonomes. */
-  var SOLO = ['.sec-head', '.figure-wide', '.figure-bleed', '.map', '.donut-card', '.split > div'];
+  var SOLO = ['.sec-head', '.figure-compare', '.map', '.donut-card', '.split > div'];
 
   /* Grilles dont les enfants se dévoilent en cascade. */
   var GRIDS = ['.cards', '.castes', '.facts', '.next-cards'];
