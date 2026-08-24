@@ -298,8 +298,17 @@ p { margin: 0; }
 /* ---------- Hero ---------- */
 
 .hero {
+  /*
+     Hauteur de référence du hero. Elle sert à la fois à dimensionner la
+     section et à borner la plage de défilement du parallaxe : les deux
+     doivent parler de la même distance, sinon l'effet se termine avant ou
+     après la sortie réelle de la section.
+  */
+  --hero-h: 100vh;
+  --hero-slack: 14%;   /* marge de glissement de la photo, voir .hero__media */
+
   position: relative;
-  min-height: 100vh;
+  min-height: var(--hero-h);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -309,10 +318,17 @@ p { margin: 0; }
   overflow: hidden;
 }
 
+/*
+   La photo déborde le haut de la section. Sans cette marge, la faire glisser
+   vers le bas découvrirait une bande vide sous l'en-tête. `.hero` rogne déjà
+   son contenu, donc le débordement ne se voit pas.
+*/
 .hero__media {
   position: absolute;
-  inset: 0;
+  inset: calc(var(--hero-slack) * -1) 0 0 0;
+  height: calc(100% + var(--hero-slack));
   z-index: 0;
+  overflow: hidden;
 }
 
 /*
@@ -330,19 +346,21 @@ p { margin: 0; }
 }
 
 /*
-   Voile en bande, même logique que pour la photo précédente : fort derrière
-   le texte, dégagé juste en dessous pour laisser voir la couleur réelle de
-   la photo (le bokeh vert, le doré de la lumière). Un voile uniforme assez
-   sombre pour le titre aurait aussi éteint tout le vert que la photo doit
-   justement montrer.
+   Voile en bande : fort derrière le texte, dégagé juste en dessous pour
+   laisser voir la couleur réelle de la photo (le bokeh vert, le doré de la
+   lumière). Un voile uniforme assez sombre pour le titre aurait éteint tout
+   le vert que la photo doit justement montrer.
 
-   Mesuré sur le rendu composité, au pire point de chaque bloc :
-   navigation 6,4:1 · titre 5,9:1 · accroche 5,7:1.
+   Il est porté par `.hero` et non par `.hero__media` : il doit rester calé
+   sur le texte. Posé sur la photo, il glisserait avec elle pendant le
+   parallaxe et le titre finirait par sortir de sa bande sombre.
 */
-.hero__media::after {
+.hero::before {
   content: '';
   position: absolute;
   inset: 0;
+  z-index: 1;
+  pointer-events: none;
   background: linear-gradient(180deg,
     rgba(16, 18, 14, 0.60) 0%,
     rgba(16, 18, 14, 0.64) 20%,
@@ -351,9 +369,17 @@ p { margin: 0; }
     rgba(16, 18, 14, 0.42) 100%);
 }
 
-.hero__inner {
+/* Calque de premier plan : tout ce qui doit se détacher de la photo. */
+.hero__fg {
   position: relative;
-  z-index: 1;
+  z-index: 2;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.hero__inner {
   width: 100%;
   max-width: 880px;
 }
@@ -517,7 +543,7 @@ p { margin: 0; }
   bottom: 32px;
   left: 50%;
   transform: translateX(-50%);
-  z-index: 1;
+  z-index: 2;
   color: rgba(255, 255, 255, 0.72);
   transition: color var(--dur-hover) ease, transform var(--dur-press) var(--ease-out);
 }
@@ -526,6 +552,90 @@ p { margin: 0; }
   .hero__scroll:hover { color: var(--white); transform: translate(-50%, 4px); }
 }
 .hero__scroll:active { transform: translate(-50%, 6px); }
+
+/* ---------- Parallaxe du hero ---------- */
+
+/*
+   La photo défile moins vite que le contenu, ce qui la fait reculer d'un
+   plan. C'est le seul endroit du site où l'effet a sa place : on ne le voit
+   qu'une fois par visite, à un moment où le lecteur n'a encore aucune tâche
+   en cours. Ailleurs, il ferait payer un coût permanent pour une impression
+   qui s'épuise au deuxième défilement.
+
+   Écart total à la sortie de la section : 11 vh pour la photo vers le bas,
+   7 vh pour le contenu vers le haut, soit 18 vh de séparation apparente.
+
+   `animation-timeline: scroll()` fait tourner tout ça sur le compositeur,
+   hors du fil principal — contrairement à un écouteur de défilement en
+   JavaScript, l'effet ne peut pas saccader quand la page travaille par
+   ailleurs. Les navigateurs qui ne le connaissent pas affichent simplement
+   un hero fixe, ce qui était déjà le cas hier.
+*/
+@supports (animation-timeline: scroll()) {
+  @media (prefers-reduced-motion: no-preference) {
+
+    .hero__media img {
+      animation: hero-recule linear both;
+      animation-timeline: scroll(root block);
+      animation-range: 0 var(--hero-h);
+    }
+
+    .hero__fg {
+      animation: hero-avance linear both;
+      animation-timeline: scroll(root block);
+      animation-range: 0 calc(var(--hero-h) * 0.8);
+    }
+
+    /*
+       Le fondu est porté par `.hero__inner`, pas par `.hero__fg`. Une
+       opacité animée fait de l'élément une racine de composition isolée :
+       posée sur le calque entier, le `backdrop-filter` de la carte de
+       chiffres n'aurait plus la photo à flouter derrière lui.
+    */
+    .hero__inner {
+      animation: hero-estompe linear both;
+      animation-timeline: scroll(root block);
+      animation-range: 0 calc(var(--hero-h) * 0.8);
+    }
+
+    /*
+       L'invite de descente n'a plus d'objet dès que le geste est amorcé :
+       elle s'efface sur le premier tiers, pas sur toute la hauteur.
+    */
+    .hero__scroll {
+      animation: hero-invite-sort linear both;
+      animation-timeline: scroll(root block);
+      animation-range: 0 calc(var(--hero-h) * 0.3);
+    }
+  }
+}
+
+@keyframes hero-recule {
+  to { transform: translateY(11vh); }
+}
+
+/*
+   Le contenu reste pleinement opaque sur la première moitié : il doit être
+   lisible tant qu'il est réellement à l'écran. La disparition ne commence
+   qu'une fois le bloc engagé dans sa sortie.
+*/
+@keyframes hero-avance {
+  to { transform: translateY(-7vh); }
+}
+
+/*
+   Le texte reste pleinement opaque sur la première moitié : il doit être
+   lisible tant qu'il est réellement à l'écran. La disparition ne commence
+   qu'une fois le bloc engagé dans sa sortie.
+*/
+@keyframes hero-estompe {
+  0%, 50% { opacity: 1; }
+  100%    { opacity: 0; }
+}
+
+@keyframes hero-invite-sort {
+  to { opacity: 0; }
+}
 
 /* ---------- En-têtes de section ---------- */
 
@@ -1655,7 +1765,7 @@ p { margin: 0; }
   .btn { padding: 11px 16px; font-size: var(--text-caption); }
   .header .btn svg { display: none; }
 
-  .hero { min-height: 92vh; padding-top: 120px; }
+  .hero { --hero-h: 92vh; padding-top: 120px; }
   .search__field { height: 56px; padding-left: 18px; }
   .search__hint { display: none; }
   .stats { gap: 20px; padding: 22px; flex-direction: column; align-items: flex-start; }
