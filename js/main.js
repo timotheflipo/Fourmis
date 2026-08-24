@@ -44,8 +44,8 @@
     intelligence: {
       eyebrow: 'Mécanique · Stigmergie',
       title: 'L\'intelligence sans cerveau',
-      img: 'images/photos/fourmi-tige.jpg',
-      alt: 'Fourmis progressant le long d\'une tige verte',
+      img: 'images/photos/fourmiliere.jpg',
+      alt: 'Deux monticules d\'entrée de fourmilière, sans architecte visible',
       href: 'intelligence.html',
       lede: 'Aucune fourmi ne connaît le plan d\'ensemble. L\'intelligence est dans le ' +
             'système lui-même, pas dans la tête d\'un individu.',
