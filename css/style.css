@@ -1216,22 +1216,43 @@ p { margin: 0; }
    conteneur transparaît sur un pixel entre les cases. Les traits sont donc
    partagés, jamais doublés, et il n'y en a aucun sur le pourtour.
 */
+/*
+   Deux niveaux, exactement comme le panneau de la carte du monde : le
+   panneau porte la marge intérieure, le contenu porte les filets. Chez la
+   carte, `.map` a 40 px de marge et le trait de `.map__detail` s'arrête au
+   bord du contenu ; on reprend exactement les mêmes 40 px, pour que le
+   retrait des filets soit identique d'un panneau à l'autre — c'est ce que
+   l'œil compare quand les deux se suivent dans la page.
+
+   Sans le conteneur intermédiaire, c'est impossible : les filets sont
+   l'écart de la grille, ils partiraient donc forcément du bord du panneau.
+*/
 .facts {
+  background: var(--warm-mist);
+  border-radius: var(--radius-card);
+  padding: 40px;
+  margin-top: 48px;
+}
+
+.facts__grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 1px;
   background: var(--ash);
-  border-radius: var(--radius-card);
-  overflow: hidden;
-  margin-top: 48px;
 }
 
+/*
+   Chaque case garde la même marge sur ses quatre côtés : la retirer sur les
+   cases de bordure aurait donné des colonnes de largeurs inégales. Un peu
+   plus haut que large, pour que les rangées respirent davantage que les
+   colonnes — neuf cases serrées verticalement se lisent mal.
+*/
 .fact {
   background: var(--warm-mist);
-  padding: 30px 28px;
+  padding: 20px 16px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
 }
 
 .fact__value {
@@ -1624,11 +1645,9 @@ p { margin: 0; }
   .caste:hover { transform: translateY(-3px); border-color: var(--ink); }
 
   /*
-     Une case ne peut pas se soulever : elle déchirerait les filets qu'elle
-     partage avec ses voisines. C'est le fond qui s'éclaircit, ce qui reste
-     dans la logique d'aplats du panneau.
+     Rien au survol sur les cases de faits : elles ne mènent nulle part, et
+     un fond qui réagit sous le curseur laisse croire le contraire.
   */
-  .fact:hover { background: var(--white); }
 
   .legend li:hover { transform: translateX(3px); }
 
@@ -1789,8 +1808,8 @@ p { margin: 0; }
   :root { --section-gap: 64px; --text-display-lg: 44px; --text-display: 38px; --text-heading-lg: 30px; }
   .cards { grid-template-columns: repeat(2, 1fr); gap: 28px; }
   .castes { grid-template-columns: repeat(3, 1fr); }
-  .facts { grid-template-columns: repeat(2, 1fr); }
-  .facts .fact:last-child { grid-column: 1 / -1; }
+  .facts__grid { grid-template-columns: repeat(2, 1fr); }
+  .facts__grid .fact:last-child { grid-column: 1 / -1; }
   .split { grid-template-columns: 1fr; gap: 40px; }
   .split--flip .split__media { order: 0; }
   .map__detail { grid-template-columns: 1fr; gap: 28px; }
@@ -1818,7 +1837,8 @@ p { margin: 0; }
   .stat { min-width: 0; }
   .cards { grid-template-columns: 1fr; }
   .castes { grid-template-columns: repeat(2, 1fr); }
-  .facts { grid-template-columns: 1fr; }
+  .facts { padding: 20px; }
+  .facts__grid { grid-template-columns: 1fr; }
   .next-cards { grid-template-columns: 1fr; }
   .map { padding: 20px; }
   .map__detail { margin-top: 24px; padding-top: 24px; }
