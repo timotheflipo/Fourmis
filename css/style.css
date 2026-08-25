@@ -1409,7 +1409,13 @@ p { margin: 0; }
    l'air autour suffisent à la sortir du flux, et un liseré d'accent sur une
    carte est devenu le tic graphique le plus daté du web.
 */
-.pull {
+/*
+   La spécificité doit dépasser celle de `.prose p`, qui vaut (0,1,1) contre
+   (0,1,0) pour une classe seule : sans cela, le corps de texte des articles
+   écrasait la taille, la couleur et l'interligne de l'exergue, qui n'était
+   plus qu'un paragraphe en gras.
+*/
+.prose .pull {
   padding: 0;
   font-size: var(--text-heading-lg);
   font-weight: 800;
