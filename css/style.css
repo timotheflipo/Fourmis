@@ -24,6 +24,15 @@
   --rule: #94948f;
 
   /*
+     Fond sombre. Employé par la bande des castes et par le pied de page,
+     qui ferment ainsi la page par la même valeur : mieux vaut un token que
+     la même valeur recopiée à deux endroits qui dériveraient l'un de l'autre.
+  */
+  --night: #1c1e19;
+  --night-text: #d3d6cb;   /* texte courant sur fond sombre, mesuré 9,9:1 */
+  --night-rule: rgba(255, 255, 255, 0.16);
+
+  /*
      Typographie — une seule famille.
      La hiérarchie vient de la graisse, de la taille et de l'interlettrage,
      pas d'une seconde police. Deux familles pour quatre articles, c'était
@@ -157,7 +166,7 @@ p { margin: 0; }
    qui sort de la colonne.
 */
 .section--dark {
-  background: #1c1e19;
+  background: var(--night);
   color: var(--linen);
   padding: 96px 0;
 }
@@ -1385,10 +1394,19 @@ p { margin: 0; }
    Si une page se terminait un jour sur une section blanche, le passage au
    lin se ferait franchement, ce qui est le comportement souhaitable.
 */
+/*
+   Pied de page sombre, sur la même valeur que la bande des castes. Il ferme
+   la page franchement au lieu de la laisser s'éteindre dans un lin identique
+   à celui de la dernière section — une frontière nette remplace une frontière
+   qu'on ne voyait pas.
+*/
 .footer {
-  background: var(--linen);
-  padding: 72px 0 40px;
+  background: var(--night);
+  color: var(--night-text);
+  padding: 72px 0 44px;
 }
+
+.footer .wordmark { color: var(--white); }
 
 .footer__top {
   display: flex;
@@ -1398,7 +1416,13 @@ p { margin: 0; }
   align-items: flex-start;
 }
 
-.footer__blurb { max-width: 420px; margin-top: 16px; font-size: var(--text-body-sm); color: var(--stone); }
+.footer__blurb {
+  max-width: 420px;
+  margin-top: 16px;
+  font-size: var(--text-body-sm);
+  line-height: 1.55;
+  color: var(--night-text);
+}
 
 .footer__cols { display: flex; gap: 64px; flex-wrap: wrap; }
 
@@ -1408,7 +1432,7 @@ p { margin: 0; }
   font-weight: 700;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--stone);
+  color: var(--lime);
 }
 
 .footer__col ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
@@ -1416,7 +1440,7 @@ p { margin: 0; }
 .footer__col a {
   font-size: var(--text-body-sm);
   text-decoration: none;
-  color: var(--ink);
+  color: var(--white);
   border-radius: var(--radius-link);
 }
 .footer__col a:hover { text-decoration: underline; }
@@ -1424,13 +1448,13 @@ p { margin: 0; }
 .footer__base {
   margin-top: 48px;
   padding-top: 24px;
-  border-top: 1px solid var(--ash);
+  border-top: 1px solid var(--night-rule);
   display: flex;
   flex-wrap: wrap;
   gap: 12px 24px;
   justify-content: space-between;
   font-size: var(--text-caption);
-  color: var(--stone);
+  color: var(--night-text);
 }
 
 /* ---------- Pages d'article ---------- */
@@ -1926,6 +1950,8 @@ p { margin: 0; }
   border-radius: var(--radius-link);
 }
 
+.footer :focus-visible,
+.section--dark :focus-visible,
 .header:not(.header--solid) :focus-visible,
 .hero :focus-visible,
 .article-hero :focus-visible,
