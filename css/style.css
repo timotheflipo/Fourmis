@@ -313,6 +313,96 @@ p { margin: 0; }
 .header:not(.header--solid) .nav__link { color: rgba(255, 255, 255, 0.92); }
 .header:not(.header--solid) .nav__link:hover { color: var(--white); }
 
+/* ---------- Navigation repliable ---------- */
+
+/*
+   Le bouton n'apparaît qu'en dessous du seuil où les liens ne tiennent plus
+   dans la barre. Au-dessus, la navigation reste en clair et ce bouton n'a
+   aucune raison d'exister.
+*/
+.nav-toggle {
+  display: none;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid currentColor;
+  border-radius: var(--radius-pill);
+  background: transparent;
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: var(--text-body-sm);
+  font-weight: 500;
+  line-height: 1;
+  padding: 11px 16px;
+  cursor: pointer;
+}
+
+.header:not(.header--solid) .nav-toggle { color: var(--white); }
+
+/*
+   `display: none` par défaut, et non seulement `visibility: hidden` : au-delà
+   du seuil, le panneau ne doit pas exister du tout. S'il ne dépendait que de
+   son attribut d'ouverture, un agrandissement de fenêtre alors qu'il est
+   ouvert le laisserait affiché en plein desktop. La mise en page ne doit pas
+   dépendre du JavaScript pour être correcte.
+*/
+.nav-panel {
+  display: none;
+  position: absolute;
+  top: calc(100% - 8px);
+  left: 0;
+  right: 0;
+  z-index: 50;
+  margin: 0 24px;
+  padding: 10px;
+  background: var(--white);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-xl);
+
+  /* Fermé, il ne doit être ni visible ni atteignable au clavier. */
+  visibility: hidden;
+  opacity: 0;
+  transform: translateY(-10px);
+  transition:
+    opacity var(--dur-panel) var(--ease-out),
+    transform var(--dur-panel) var(--ease-out),
+    visibility 0s linear var(--dur-panel);
+}
+
+.nav-panel[data-open='true'] {
+  visibility: visible;
+  opacity: 1;
+  transform: none;
+  transition-delay: 0s;
+}
+
+.nav-panel nav { display: grid; }
+
+.nav-panel__link {
+  padding: 13px 14px;
+  border-radius: 12px;
+  font-size: var(--text-body);
+  font-weight: 500;
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.nav-panel__link[aria-current='page'] {
+  font-weight: 700;
+  background: var(--warm-mist);
+}
+
+.nav-panel__cta {
+  width: 100%;
+  justify-content: center;
+  margin-top: 10px;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .nav-panel__link:hover { background: var(--warm-mist); }
+}
+
+.nav-panel__link:active { background: var(--linen); }
+
 /* ---------- Hero ---------- */
 
 .hero {
@@ -1286,10 +1376,18 @@ p { margin: 0; }
 
 /* ---------- Pied de page ---------- */
 
+/*
+   Pas de marge haute ici. Le pied de page est en lin, et les cinq pages se
+   terminent sur une section en lin : les 80 px de marge laissaient donc
+   passer le blanc du corps entre deux surfaces de même couleur, une bande
+   vide qui ne séparait rien. L'espacement est déjà porté par le padding.
+
+   Si une page se terminait un jour sur une section blanche, le passage au
+   lin se ferait franchement, ce qui est le comportement souhaitable.
+*/
 .footer {
   background: var(--linen);
-  padding: 64px 0 40px;
-  margin-top: var(--section-gap);
+  padding: 72px 0 40px;
 }
 
 .footer__top {
@@ -1852,9 +1950,25 @@ p { margin: 0; }
   .next-cards { grid-template-columns: repeat(2, 1fr); }
 }
 
-/* La barre de navigation devient trop serrée bien avant le seuil mobile. */
+/*
+   La barre de navigation devient trop serrée bien avant le seuil mobile.
+   Les liens passent alors dans le panneau repliable, construit à partir de
+   ces mêmes éléments par `js/main.js`.
+*/
 @media (max-width: 980px) {
   .nav { display: none; }
+  .nav-toggle { display: inline-flex; }
+  .nav-panel { display: block; }
+
+  /* L'action principale rejoint le panneau : trois éléments dans une barre
+     étroite se chevauchaient. */
+  .header__inner > .btn { display: none; }
+}
+
+/* Sous 420 px, le mot « Menu » cède la place au seul pictogramme. */
+@media (max-width: 420px) {
+  .nav-toggle__texte { display: none; }
+  .nav-toggle { padding: 11px 12px; }
 }
 
 @media (max-width: 720px) {

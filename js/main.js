@@ -154,6 +154,102 @@
   }
 
   /* ---------------------------------------------------------
+     1 bis. Navigation repliable
+
+     Sous 980 px, les quatre liens d'article disparaissaient purement et
+     simplement, sans rien pour les remplacer : depuis un article, le seul
+     chemin vers un autre article passait par un retour à l'accueil et une
+     nouvelle sélection. Sur un site qui se consulte largement au téléphone,
+     c'était le défaut le plus coûteux du projet.
+
+     Le panneau est construit à partir des liens déjà présents dans l'en-tête,
+     pour qu'il n'existe qu'une seule liste à tenir à jour. Les originaux sont
+     en `display: none` à cette largeur, donc retirés de l'arbre
+     d'accessibilité : aucun doublon pour un lecteur d'écran.
+     --------------------------------------------------------- */
+
+  var header = document.querySelector('.header');
+  var navSource = header && header.querySelector('.nav');
+
+  if (navSource) {
+    var barre = header.querySelector('.header__inner');
+    var actionPrincipale = barre.querySelector('.btn');
+
+    var bouton = document.createElement('button');
+    bouton.type = 'button';
+    bouton.className = 'nav-toggle';
+    bouton.id = 'navToggle';
+    bouton.setAttribute('aria-expanded', 'false');
+    bouton.setAttribute('aria-controls', 'navPanel');
+    bouton.innerHTML =
+      '<span class="nav-toggle__texte">Menu</span>' +
+      '<svg class="nav-toggle__icone" width="16" height="16" viewBox="0 0 24 24" fill="none" ' +
+      'stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">' +
+      '<path d="M4 7h16"/><path d="M4 12h16"/><path d="M4 17h16"/></svg>';
+
+    var panneau = document.createElement('div');
+    panneau.className = 'nav-panel';
+    panneau.id = 'navPanel';
+    panneau.dataset.open = 'false';
+
+    var liste = document.createElement('nav');
+    liste.setAttribute('aria-label', 'Articles');
+    Array.prototype.forEach.call(navSource.querySelectorAll('.nav__link'), function (a) {
+      var lien = a.cloneNode(true);
+      lien.className = 'nav-panel__link';
+      /* Repère de position : sur mobile, on ne voit plus la barre du haut. */
+      if (lien.getAttribute('href') === location.pathname.split('/').pop()) {
+        lien.setAttribute('aria-current', 'page');
+      }
+      liste.appendChild(lien);
+    });
+    panneau.appendChild(liste);
+
+    /* L'action principale rejoint le panneau : trois éléments dans une barre
+       de 375 px se chevauchaient. */
+    if (actionPrincipale) {
+      var copie = actionPrincipale.cloneNode(true);
+      copie.className = 'btn btn--lime nav-panel__cta';
+      panneau.appendChild(copie);
+    }
+
+    barre.insertBefore(bouton, actionPrincipale || null);
+    header.appendChild(panneau);
+
+    var ouvrir = function (etat) {
+      panneau.dataset.open = etat ? 'true' : 'false';
+      bouton.setAttribute('aria-expanded', etat ? 'true' : 'false');
+      if (!etat) return;
+      var premier = panneau.querySelector('a');
+      if (premier) premier.focus();
+    };
+
+    bouton.addEventListener('click', function () {
+      ouvrir(panneau.dataset.open !== 'true');
+    });
+
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && panneau.dataset.open === 'true') {
+        ouvrir(false);
+        bouton.focus();
+      }
+    });
+
+    document.addEventListener('click', function (e) {
+      if (panneau.dataset.open !== 'true') return;
+      if (!panneau.contains(e.target) && e.target !== bouton && !bouton.contains(e.target)) {
+        ouvrir(false);
+      }
+    });
+
+    /* Repassé au-dessus du seuil, le panneau n'a plus lieu d'être ouvert. */
+    var large = window.matchMedia('(min-width: 981px)');
+    var surSeuil = function () { if (large.matches) ouvrir(false); };
+    if (large.addEventListener) large.addEventListener('change', surSeuil);
+    else if (large.addListener) large.addListener(surSeuil);
+  }
+
+  /* ---------------------------------------------------------
      2. Comparateur avant / après
      --------------------------------------------------------- */
 
