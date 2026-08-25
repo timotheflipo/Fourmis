@@ -14,8 +14,8 @@
     acacia: {
       eyebrow: 'Étude de cas · Laikipia, Kenya',
       title: 'L\'acacia siffleur',
-      img: 'images/photos/girafe-acacia.jpg',
-      alt: 'Girafe broutant les branches hautes d\'un acacia',
+      img: 'images/photos/acacia-epines.jpg',
+      alt: 'Épines creuses d\'un acacia, où loge la colonie',
       href: 'acacia.html',
       lede: 'Une fourmi d\'un centimètre protège un arbre contre un animal de six tonnes ' +
             'et, sans intention ni conscience, tient la savane entière en équilibre.',
@@ -29,8 +29,8 @@
     superorganisme: {
       eyebrow: 'Concept · Hölldobler & Wilson',
       title: 'Le superorganisme',
-      img: 'images/photos/fourmi-macro.jpg',
-      alt: 'Portrait macro de la tête d\'une fourmi',
+      img: 'images/photos/fourmis-pont.jpg',
+      alt: 'Trois fourmis accrochées à une tige, formant une chaîne',
       href: 'superorganisme.html',
       lede: 'La colonie fonctionne comme un corps unique, ' +
             'dont les fourmis sont les cellules : remplaçables, spécialisées, mortelles.',
@@ -44,8 +44,8 @@
     intelligence: {
       eyebrow: 'Mécanique · Stigmergie',
       title: 'L\'intelligence sans cerveau',
-      img: 'images/photos/fourmiliere.jpg',
-      alt: 'Deux monticules d\'entrée de fourmilière, sans architecte visible',
+      img: 'images/photos/colonne.jpg',
+      alt: 'Fourmis coupe-feuille en file, chacune portant un fragment de feuille',
       href: 'intelligence.html',
       lede: 'Aucune fourmi ne connaît le plan d\'ensemble. L\'intelligence est dans le ' +
             'système lui-même, pas dans la tête d\'un individu.',
@@ -59,8 +59,8 @@
     guerre: {
       eyebrow: 'Conflit · 100 millions d\'années',
       title: 'La guerre mondiale',
-      img: 'images/photos/fourmi-trou.jpg',
-      alt: 'Fourmi postée à l\'entrée d\'une galerie',
+      img: 'images/photos/fourmis-nourriture.jpg',
+      alt: 'Fourmis massées en nombre sur une proie',
       href: 'guerre.html',
       lede: 'Sous nos pieds se joue un conflit permanent pour les niches écologiques : ' +
             'des colonnes de chasse de cent mètres aux super-colonies qui couvrent des continents.',

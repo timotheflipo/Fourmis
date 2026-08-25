@@ -752,8 +752,15 @@ p { margin: 0; }
   color: var(--stone);
 }
 
+/*
+   `auto` en haut plutôt qu'une valeur fixe : les descriptions font deux ou
+   trois lignes selon les cartes, et le lien se calait donc à une hauteur
+   différente dans chacune. Poussé en bas de la carte, il s'aligne sur toute
+   la rangée quelle que soit la longueur du texte.
+*/
 .card__more {
-  margin-top: 14px;
+  margin-top: auto;
+  padding-top: 14px;
   font-size: var(--text-body-sm);
   font-weight: 600;
   color: var(--ink);
@@ -1249,23 +1256,30 @@ p { margin: 0; }
 */
 .fact {
   background: var(--warm-mist);
-  padding: 20px 16px;
+  padding: 22px 18px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
 }
 
+/*
+   36 px mettait ces valeurs à quatre points du titre de section, en 48 px :
+   à l'écran, elles se lisaient comme neuf sous-titres plutôt que comme des
+   données. Ramenées sur le palier `heading` de l'échelle, elles dominent
+   nettement leur libellé sans concurrencer le titre de la partie.
+*/
 .fact__value {
-  font-size: var(--text-heading-lg);
-  font-weight: 800;
-  line-height: 1;
+  font-size: var(--text-heading);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
   color: var(--ink);
   text-wrap: balance;
 }
 
 .fact__label {
   font-size: var(--text-body-sm);
-  line-height: 1.5;
+  line-height: 1.55;
   color: var(--stone);
   text-wrap: pretty;
 }
@@ -1549,8 +1563,24 @@ p { margin: 0; }
   text-transform: uppercase;
   color: var(--stone);
 }
-.sources ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
-.sources li { font-size: var(--text-body-sm); color: var(--stone); }
+.sources ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+.sources li { font-size: var(--text-body-sm); color: var(--stone); line-height: 1.55; }
+
+/*
+   Les identifiants DOI sont posés en petites capitales espacées : ils se
+   repèrent d'un coup d'œil dans une liste de références sans avoir la
+   couleur ni le soulignement d'un lien de corps de texte.
+*/
+.sources a[href^="https://doi.org"] {
+  display: inline-block;
+  margin-top: 2px;
+  font-size: var(--text-caption);
+  letter-spacing: 0.04em;
+  color: var(--ink);
+  text-decoration: none;
+  border-bottom: 1px solid var(--ash);
+}
+.sources a[href^="https://doi.org"]:hover { border-bottom-color: var(--ink); }
 
 .next-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; margin-top: 48px; }
 .next-cards .card { cursor: pointer; }
