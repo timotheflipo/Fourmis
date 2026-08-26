@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=38">
+<link rel="stylesheet" href="css/style.css?v=40">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%23333'/><circle cx='50' cy='30' r='11' fill='%23d7eb80'/><circle cx='50' cy='52' r='9' fill='%23d7eb80'/><circle cx='50' cy='74' r='13' fill='%23d7eb80'/></svg>">
 </head>
 <body>
@@ -175,110 +175,6 @@
         </p>
 
 
-        <!--
-          La trophallaxie. L'article pose la colonie comme un corps ; c'est
-          l'endroit où on peut le montrer plutôt que l'affirmer. Une seule
-          ouvrière rentre avec du liquide, et il se répand de bouche en
-          bouche. Personne n'organise la distribution : chacune partage avec
-          qui elle touche, et la colonie entière finit nourrie.
-
-          Positions figées dans le balisage, pas tirées au chargement : le
-          dessin doit être le même pour tout le monde, et rester lisible si
-          le script ne s'exécute pas.
-        -->
-        <figure class="demo demo--trophallaxie">
-          <div class="demo__scene">
-            <svg class="tropho" viewBox="0 0 520 250" aria-hidden="true">
-              <g class="tropho__liens" stroke="var(--ash)" stroke-width="1" fill="none"></g>
-              <g class="tropho__fourmis" fill="var(--ash)">
-                <circle cx="112" cy="127" r="7"/>
-                <circle cx="397" cy="45" r="7"/>
-                <circle cx="68" cy="186" r="7"/>
-                <circle cx="46" cy="220" r="7"/>
-                <circle cx="332" cy="148" r="7"/>
-                <circle cx="33" cy="131" r="7" data-source="true"/>
-                <circle cx="115" cy="74" r="7"/>
-                <circle cx="269" cy="153" r="7"/>
-                <circle cx="336" cy="117" r="7"/>
-                <circle cx="493" cy="223" r="7"/>
-                <circle cx="357" cy="88" r="7"/>
-                <circle cx="161" cy="40" r="7"/>
-                <circle cx="213" cy="194" r="7"/>
-                <circle cx="474" cy="194" r="7"/>
-                <circle cx="124" cy="206" r="7"/>
-                <circle cx="485" cy="105" r="7"/>
-                <circle cx="321" cy="180" r="7"/>
-                <circle cx="73" cy="38" r="7"/>
-                <circle cx="115" cy="171" r="7"/>
-                <circle cx="327" cy="49" r="7"/>
-                <circle cx="180" cy="85" r="7"/>
-                <circle cx="68" cy="141" r="7"/>
-                <circle cx="307" cy="100" r="7"/>
-                <circle cx="432" cy="62" r="7"/>
-                <circle cx="363" cy="40" r="7"/>
-                <circle cx="288" cy="195" r="7"/>
-                <circle cx="157" cy="208" r="7"/>
-                <circle cx="34" cy="79" r="7"/>
-                <circle cx="54" cy="61" r="7"/>
-                <circle cx="294" cy="52" r="7"/>
-                <circle cx="443" cy="220" r="7"/>
-                <circle cx="42" cy="30" r="7"/>
-                <circle cx="354" cy="217" r="7"/>
-                <circle cx="454" cy="96" r="7"/>
-                <circle cx="396" cy="197" r="7"/>
-                <circle cx="450" cy="157" r="7"/>
-                <circle cx="358" cy="139" r="7"/>
-                <circle cx="239" cy="31" r="7"/>
-                <circle cx="137" cy="54" r="7"/>
-                <circle cx="110" cy="28" r="7"/>
-                <circle cx="188" cy="164" r="7"/>
-                <circle cx="409" cy="153" r="7"/>
-                <circle cx="483" cy="132" r="7"/>
-                <circle cx="189" cy="42" r="7"/>
-                <circle cx="39" cy="186" r="7"/>
-                <circle cx="470" cy="43" r="7"/>
-                <circle cx="152" cy="120" r="7"/>
-                <circle cx="249" cy="89" r="7"/>
-                <circle cx="315" cy="209" r="7"/>
-                <circle cx="85" cy="106" r="7"/>
-                <circle cx="216" cy="65" r="7"/>
-                <circle cx="262" cy="221" r="7"/>
-                <circle cx="208" cy="224" r="7"/>
-                <circle cx="247" cy="59" r="7"/>
-                <circle cx="225" cy="149" r="7"/>
-                <circle cx="201" cy="121" r="7"/>
-                <circle cx="64" cy="86" r="7"/>
-                <circle cx="358" cy="185" r="7"/>
-              </g>
-            </svg>
-          </div>
-
-          <div class="demo__commande demo__commande--interrupteur">
-            <button class="cascade__bouton" type="button" id="trophoBouton">
-              Nourrir une seule ouvrière
-            </button>
-          </div>
-
-          <div class="demo__mesures" role="status" aria-live="polite">
-            <div class="demo__mesure">
-              <span class="demo__valeur" id="trophoNourries">0 / 58</span>
-              <span class="demo__legende">ouvrières nourries</span>
-            </div>
-            <div class="demo__mesure">
-              <span class="demo__valeur" id="trophoEchanges">0</span>
-              <span class="demo__legende">échanges bouche à bouche</span>
-            </div>
-            <div class="demo__mesure">
-              <span class="demo__valeur" id="trophoRelais">&#8212;</span>
-              <span class="demo__legende">relais depuis la source</span>
-            </div>
-          </div>
-
-          <figcaption class="demo__note" id="trophoNote">
-            Une seule fourmi est rentrée avec de la nourriture. Aucune ne sait qui a déjà
-            mangé, ni combien il reste à nourrir : chacune partage avec celles qu'elle touche.
-          </figcaption>
-        </figure>
 
         <figure>
           <img src="images/photos/fourmis-pont.jpg" alt="Fourmis agrippées les unes aux autres le long d'une tige" loading="lazy">
@@ -298,27 +194,10 @@
         </p>
 
         <p>
-          La raison de ce détour est simple : une fourmi ne sait pas digérer la cellulose.
-          Les feuilles qu'elle transporte lui sont aussi indigestes qu'à nous. Le champignon,
-          lui, en est capable. Les ouvrières mâchent donc les fragments en une pâte, la
-          déposent dans les chambres du nid, et laissent la culture faire le travail.
-        </p>
-
-        <p>
-          Ce que mangent les fourmis, c'est le champignon. Plus précisément, celui-ci produit
-          à l'extrémité de ses filaments de petites excroissances renflées et gorgées de
-          nutriments, les <strong>gongylidies</strong>, groupées en bouquets que les ouvrières
-          récoltent et distribuent. Les larves n'ont pratiquement pas d'autre nourriture.
-          Les adultes, eux, tirent l'essentiel de leur énergie de la sève qu'elles avalent
-          en découpant les feuilles.
-        </p>
-
-        <p>
-          Le plus élégant est la boucle qui se referme. Les enzymes du champignon survivent
-          au passage dans l'intestin de la fourmi, et se retrouvent déposées sur la pâte de
-          feuilles fraîches. En se nourrissant, l'ouvrière ensemence donc son propre compost
-          des outils qui vont le décomposer. Personne n'a conçu ce circuit, et aucune fourmi
-          n'en a la moindre idée.
+          La raison du détour est simple : une fourmi ne digère pas la cellulose, le
+          champignon si. Ce que mangent les fourmis, c'est donc lui — plus précisément les
+          <strong>gongylidies</strong>, des excroissances gorgées de nutriments qu'il produit
+          au bout de ses filaments. Les larves n'ont presque rien d'autre.
         </p>
 
         <p>
@@ -327,6 +206,76 @@
           d'antibiotiques, du genre <em>Streptomyces</em>, aident les fourmis à protéger la
           culture contre un champignon pathogène, <em>Escovopsis</em>.
         </p>
+
+        <!--
+          Le cycle du champignon. La section décrit une boucle, et une boucle
+          est précisément ce qu'un paragraphe raconte mal : il faut arriver à
+          la fin pour comprendre que ça revient au début. Ici on la voit
+          tourner, et le passage de la dernière étape à la deuxième — les
+          enzymes qui retombent sur la pâte — est le moment où l'on comprend
+          que la fourmi ensemence son propre compost sans le savoir.
+        -->
+        <figure class="demo demo--cycle">
+          <div class="cycle">
+            <svg class="cycle__roue" viewBox="0 0 236 236" aria-hidden="true">
+              <g class="cycle__fleches" fill="none" stroke="var(--ash)" stroke-width="2">
+                <path class="cycle__fleche" data-rang="0" d="M136.7 38.2 A82 82 0 0 1 188.2 75.5"/>
+                <path class="cycle__fleche" data-rang="1" d="M199.7 111.1 A82 82 0 0 1 180.1 171.6"/>
+                <path class="cycle__fleche" data-rang="2" d="M149.8 193.6 A82 82 0 0 1 86.2 193.6"/>
+                <path class="cycle__fleche" data-rang="3" d="M55.9 171.6 A82 82 0 0 1 36.3 111.1"/>
+                <path class="cycle__fleche" data-rang="4" d="M47.8 75.5 A82 82 0 0 1 99.3 38.2"/>
+              </g>
+              <g class="cycle__noeuds" fill="var(--warm-mist)" stroke="var(--ash)" stroke-width="2">
+                <circle class="cycle__noeud" data-rang="0" cx="118.0" cy="36.0" r="13"/>
+                <circle class="cycle__noeud" data-rang="1" cx="196.0" cy="92.7" r="13"/>
+                <circle class="cycle__noeud" data-rang="2" cx="166.2" cy="184.3" r="13"/>
+                <circle class="cycle__noeud" data-rang="3" cx="69.8" cy="184.3" r="13"/>
+                <circle class="cycle__noeud" data-rang="4" cx="40.0" cy="92.7" r="13"/>
+              </g>
+              <g class="cycle__chiffres">
+                <text class="cycle__chiffre" data-rang="0" x="118.0" y="40.0">1</text>
+                <text class="cycle__chiffre" data-rang="1" x="196.0" y="96.7">2</text>
+                <text class="cycle__chiffre" data-rang="2" x="166.2" y="188.3">3</text>
+                <text class="cycle__chiffre" data-rang="3" x="69.8" y="188.3">4</text>
+                <text class="cycle__chiffre" data-rang="4" x="40.0" y="96.7">5</text>
+              </g>
+            </svg>
+
+            <ol class="cycle__liste" id="cycleListe" role="status" aria-live="polite">
+            <li class="cycle__etape" data-rang="0">
+              <span class="cycle__nom">La feuille</span>
+              <span class="cycle__quoi">Découpée sur l'arbre et rapportée au nid. Personne ne la mangera.</span>
+            </li>
+            <li class="cycle__etape" data-rang="1">
+              <span class="cycle__nom">La pâte</span>
+              <span class="cycle__quoi">Mâchée, puis déposée dans les chambres souterraines.</span>
+            </li>
+            <li class="cycle__etape" data-rang="2">
+              <span class="cycle__nom">Le champignon</span>
+              <span class="cycle__quoi">Il décompose la cellulose, ce dont aucune fourmi n'est capable.</span>
+            </li>
+            <li class="cycle__etape" data-rang="3">
+              <span class="cycle__nom">Les gongylidies</span>
+              <span class="cycle__quoi">Des excroissances gorgées de nutriments, récoltées et distribuées.</span>
+            </li>
+            <li class="cycle__etape" data-rang="4">
+              <span class="cycle__nom">Les enzymes</span>
+              <span class="cycle__quoi">Elles survivent au transit intestinal et retombent sur la pâte fraîche.</span>
+            </li>
+            </ol>
+          </div>
+
+          <div class="demo__commande demo__commande--interrupteur">
+            <button class="cascade__bouton" type="button" id="cycleBouton" aria-pressed="false">
+              Suivre une feuille
+            </button>
+          </div>
+
+          <figcaption class="demo__note" id="cycleNote">
+            Cinq étapes, et la cinquième ramène à la deuxième. Aucune fourmi ne connaît
+            ce circuit : elle coupe, elle mâche, elle mange.
+          </figcaption>
+        </figure>
 
         <div class="callout">
           <h4>Le superorganisme déborde de son espèce</h4>
@@ -469,6 +418,6 @@
   </div>
 </footer>
 
-<script src="js/main.js?v=38"></script>
+<script src="js/main.js?v=40"></script>
 </body>
 </html>

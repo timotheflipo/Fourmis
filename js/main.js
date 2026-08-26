@@ -271,130 +271,94 @@
   }
 
   /* ---------------------------------------------------------
-     1 quater. La trophallaxie  (superorganisme.html)
+     1 quater. Le cycle du champignon  (superorganisme.html)
 
-     L'article pose la colonie comme un corps ; c'est ici qu'on peut le
-     montrer plutôt que l'affirmer. Une seule ouvrière rentre avec du liquide
-     et il se répand de proche en proche.
+     La section décrit une boucle, et une boucle est ce qu'un paragraphe
+     raconte le plus mal : il faut arriver à la fin pour comprendre que ça
+     revient au début.
 
-     Le voisinage est calculé à partir des distances réelles entre fourmis :
-     personne ne dispose d'une liste de qui nourrir, chacune ne touche que
-     celles qui sont à portée. La propagation est un parcours en largeur, ce
-     qui n'est pas un raccourci d'implémentation mais exactement le phénomène —
-     tout le monde à un relais donné mange en même temps.
+     Le parcours ne s'arrête donc pas à la cinquième étape, il repart à la
+     deuxième — pas à la première, parce qu'aucune nouvelle feuille n'est
+     nécessaire pour que le cycle continue. C'est exactement ce que le
+     schéma doit faire comprendre.
      --------------------------------------------------------- */
 
-  var demoTropho = document.querySelector('.demo--trophallaxie');
+  var demoCycle = document.querySelector('.demo--cycle');
 
-  if (demoTropho) {
-    var fourmis = Array.prototype.slice.call(demoTropho.querySelectorAll('.tropho__fourmis circle'));
-    var gLiens = demoTropho.querySelector('.tropho__liens');
-    var btnTropho = demoTropho.querySelector('#trophoBouton');
-    var elNourries = demoTropho.querySelector('#trophoNourries');
-    var elEchanges = demoTropho.querySelector('#trophoEchanges');
-    var elRelais = demoTropho.querySelector('#trophoRelais');
-    var noteTropho = demoTropho.querySelector('#trophoNote');
+  if (demoCycle) {
+    var noeuds = demoCycle.querySelectorAll('.cycle__noeud');
+    var flechesC = demoCycle.querySelectorAll('.cycle__fleche');
+    var etapes = demoCycle.querySelectorAll('.cycle__etape');
+    var btnCycle = demoCycle.querySelector('#cycleBouton');
+    var noteCycle = demoCycle.querySelector('#cycleNote');
 
-    var PORTEE = 74;    /* une fourmi ne touche que ses voisines immédiates */
-    var CADENCE = 460;  /* durée d'un relais */
+    var RETOUR = 1;      /* la boucle repart à la pâte, pas à la feuille */
+    var CADENCE_C = 1500;
+    var doucC = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-    var pos = fourmis.map(function (c) {
-      return { x: +c.getAttribute('cx'), y: +c.getAttribute('cy') };
-    });
+    var rang = -1, tours = 0, minuterieC = null, tourne = false;
 
-    /* Voisinage par distance, et non par une liste écrite d'avance. */
-    var voisins = pos.map(function (a, i) {
-      var v = [];
-      pos.forEach(function (b, j) {
-        if (i === j) return;
-        if (Math.hypot(a.x - b.x, a.y - b.y) <= PORTEE) v.push(j);
+    var peindre = function () {
+      Array.prototype.forEach.call(noeuds, function (n, i) {
+        n.dataset.actif = (i === rang) ? 'true' : 'false';
       });
-      return v;
-    });
-
-    /* Les contacts, tracés une fois : ce sont eux qui rendent le réseau lisible. */
-    var traits = [];
-    voisins.forEach(function (v, i) {
-      v.forEach(function (j) {
-        if (j > i) traits.push('<line x1="' + pos[i].x + '" y1="' + pos[i].y +
-                               '" x2="' + pos[j].x + '" y2="' + pos[j].y + '"/>');
+      Array.prototype.forEach.call(etapes, function (e, i) {
+        e.dataset.actif = (i === rang) ? 'true' : 'false';
       });
-    });
-    gLiens.innerHTML = traits.join('');
-
-    var depart = fourmis.findIndex(function (c) { return c.dataset.source === 'true'; });
-    if (depart < 0) depart = 0;
-
-    var minuteriesT = [], enCours = false;
-    var douxT = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-    var remettre = function () {
-      minuteriesT.forEach(clearTimeout);
-      minuteriesT = [];
-      fourmis.forEach(function (c) { c.dataset.nourrie = 'false'; });
-      elNourries.textContent = '0 / ' + fourmis.length;
-      elEchanges.textContent = '0';
-      elRelais.textContent = '—';
-      demoTropho.dataset.fini = 'false';
+      Array.prototype.forEach.call(demoCycle.querySelectorAll('.cycle__chiffre'), function (c, i) {
+        c.dataset.actif = (i === rang) ? 'true' : 'false';
+      });
+      /* La flèche allumée est celle qui part de l'étape en cours. */
+      Array.prototype.forEach.call(flechesC, function (f, i) {
+        f.dataset.actif = (i === rang) ? 'true' : 'false';
+      });
     };
 
-    var diffuser = function () {
-      remettre();
-      enCours = true;
-      btnTropho.disabled = true;
+    var avancer = function () {
+      var dernier = noeuds.length - 1;
+      if (rang === dernier) { rang = RETOUR; tours++; }
+      else if (rang < 0) { rang = 0; }
+      else { rang++; }
 
-      var vus = {}, front = [depart], relais = 0, nourries = 0, echanges = 0;
-      vus[depart] = true;
+      peindre();
 
-      var etape = function () {
-        if (!front.length) {
-          enCours = false;
-          btnTropho.disabled = false;
-          btnTropho.textContent = 'Recommencer';
-          demoTropho.dataset.fini = 'true';
-          /*
-             `relais` a été incrémenté une fois de plus après le dernier
-             affichage : on retranche pour que la note et le compteur
-             annoncent le même nombre.
-          */
-          noteTropho.textContent =
-            'Toute la colonie est nourrie en ' + (relais - 1) + ' relais, à partir d\'une seule ' +
-            'ouvrière. Aucune n\'a jamais su combien il restait à nourrir : le liquide ' +
-            'circule comme dans un appareil circulatoire, sans que personne le dirige.';
-          return;
-        }
+      if (tours >= 1) {
+        demoCycle.dataset.boucle = 'true';
+        noteCycle.textContent =
+          'Le circuit vient de se refermer : les enzymes sont retombées sur la pâte, sans ' +
+          'qu\'une nouvelle feuille soit nécessaire. En se nourrissant, l\'ouvrière ensemence ' +
+          'son propre compost des outils qui vont le décomposer — et elle n\'en sait rien.';
+      }
 
-        var suivant = [];
-        front.forEach(function (i) {
-          fourmis[i].dataset.nourrie = 'true';
-          nourries++;
-          voisins[i].forEach(function (j) {
-            if (vus[j]) return;
-            vus[j] = true; echanges++;
-            suivant.push(j);
-          });
-        });
-
-        elNourries.textContent = nourries + ' / ' + fourmis.length;
-        elEchanges.textContent = echanges;
-        elRelais.textContent = relais;
-
-        front = suivant;
-        relais++;
-        minuteriesT.push(setTimeout(etape, douxT ? 0 : CADENCE));
-      };
-
-      etape();
+      minuterieC = setTimeout(avancer, doucC ? 2600 : CADENCE_C);
     };
 
-    btnTropho.addEventListener('click', function () {
-      if (enCours) return;
-      btnTropho.textContent = 'Nourrir une seule ouvrière';
-      noteTropho.textContent =
-        'Une seule fourmi est rentrée avec de la nourriture. Aucune ne sait qui a déjà ' +
-        'mangé, ni combien il reste à nourrir : chacune partage avec celles qu\'elle touche.';
-      diffuser();
+    var arreter = function () {
+      clearTimeout(minuterieC);
+      tourne = false;
+      btnCycle.setAttribute('aria-pressed', 'false');
+      btnCycle.textContent = 'Suivre une feuille';
+    };
+
+    btnCycle.addEventListener('click', function () {
+      if (tourne) { arreter(); return; }
+      tourne = true;
+      rang = -1; tours = 0;
+      demoCycle.dataset.boucle = 'false';
+      btnCycle.setAttribute('aria-pressed', 'true');
+      btnCycle.textContent = 'Arrêter';
+      noteCycle.textContent =
+        'Cinq étapes, et la cinquième ramène à la deuxième. Aucune fourmi ne connaît ' +
+        'ce circuit : elle coupe, elle mâche, elle mange.';
+      avancer();
     });
+
+    /* Un parcours qui tourne hors écran ne sert personne. */
+    if ('IntersectionObserver' in window) {
+      new IntersectionObserver(function (es) {
+        es.forEach(function (e) { if (!e.isIntersecting && tourne) arreter(); });
+      }, { threshold: 0.1 }).observe(demoCycle);
+    }
   }
 
   /* ---------------------------------------------------------
