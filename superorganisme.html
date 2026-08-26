@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=35">
+<link rel="stylesheet" href="css/style.css?v=37">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%23333'/><circle cx='50' cy='30' r='11' fill='%23d7eb80'/><circle cx='50' cy='52' r='9' fill='%23d7eb80'/><circle cx='50' cy='74' r='13' fill='%23d7eb80'/></svg>">
 </head>
 <body>
@@ -176,49 +176,107 @@
 
 
         <!--
-          Le pont vivant. L'article affirme que la structure s'ajuste à la
-          largeur du vide « sans qu'aucune fourmi ne connaisse la largeur
-          réelle ». Le curseur laisse vérifier l'affirmation : on écarte les
-          berges, le pont se refait, et le compteur montre l'arbitrage se
-          résoudre alors que personne ne le calcule.
+          La trophallaxie. L'article pose la colonie comme un corps ; c'est
+          l'endroit où on peut le montrer plutôt que l'affirmer. Une seule
+          ouvrière rentre avec du liquide, et il se répand de bouche en
+          bouche. Personne n'organise la distribution : chacune partage avec
+          qui elle touche, et la colonie entière finit nourrie.
+
+          Positions figées dans le balisage, pas tirées au chargement : le
+          dessin doit être le même pour tout le monde, et rester lisible si
+          le script ne s'exécute pas.
         -->
-        <figure class="demo demo--pont">
+        <figure class="demo demo--trophallaxie">
           <div class="demo__scene">
-            <svg class="pont" viewBox="0 84 520 116" aria-hidden="true">
-              <g class="pont__berges" fill="var(--ash)">
-                <path class="pont__berge-g" d="M0 130 H140 V200 H0 Z"/>
-                <path class="pont__berge-d" d="M380 130 H520 V200 H380 Z"/>
+            <svg class="tropho" viewBox="0 0 520 250" aria-hidden="true">
+              <g class="tropho__liens" stroke="var(--ash)" stroke-width="1" fill="none"></g>
+              <g class="tropho__fourmis" fill="var(--ash)">
+                <circle cx="112" cy="127" r="7"/>
+                <circle cx="397" cy="45" r="7"/>
+                <circle cx="68" cy="186" r="7"/>
+                <circle cx="46" cy="220" r="7"/>
+                <circle cx="332" cy="148" r="7"/>
+                <circle cx="33" cy="131" r="7" data-source="true"/>
+                <circle cx="115" cy="74" r="7"/>
+                <circle cx="269" cy="153" r="7"/>
+                <circle cx="336" cy="117" r="7"/>
+                <circle cx="493" cy="223" r="7"/>
+                <circle cx="357" cy="88" r="7"/>
+                <circle cx="161" cy="40" r="7"/>
+                <circle cx="213" cy="194" r="7"/>
+                <circle cx="474" cy="194" r="7"/>
+                <circle cx="124" cy="206" r="7"/>
+                <circle cx="485" cy="105" r="7"/>
+                <circle cx="321" cy="180" r="7"/>
+                <circle cx="73" cy="38" r="7"/>
+                <circle cx="115" cy="171" r="7"/>
+                <circle cx="327" cy="49" r="7"/>
+                <circle cx="180" cy="85" r="7"/>
+                <circle cx="68" cy="141" r="7"/>
+                <circle cx="307" cy="100" r="7"/>
+                <circle cx="432" cy="62" r="7"/>
+                <circle cx="363" cy="40" r="7"/>
+                <circle cx="288" cy="195" r="7"/>
+                <circle cx="157" cy="208" r="7"/>
+                <circle cx="34" cy="79" r="7"/>
+                <circle cx="54" cy="61" r="7"/>
+                <circle cx="294" cy="52" r="7"/>
+                <circle cx="443" cy="220" r="7"/>
+                <circle cx="42" cy="30" r="7"/>
+                <circle cx="354" cy="217" r="7"/>
+                <circle cx="454" cy="96" r="7"/>
+                <circle cx="396" cy="197" r="7"/>
+                <circle cx="450" cy="157" r="7"/>
+                <circle cx="358" cy="139" r="7"/>
+                <circle cx="239" cy="31" r="7"/>
+                <circle cx="137" cy="54" r="7"/>
+                <circle cx="110" cy="28" r="7"/>
+                <circle cx="188" cy="164" r="7"/>
+                <circle cx="409" cy="153" r="7"/>
+                <circle cx="483" cy="132" r="7"/>
+                <circle cx="189" cy="42" r="7"/>
+                <circle cx="39" cy="186" r="7"/>
+                <circle cx="470" cy="43" r="7"/>
+                <circle cx="152" cy="120" r="7"/>
+                <circle cx="249" cy="89" r="7"/>
+                <circle cx="315" cy="209" r="7"/>
+                <circle cx="85" cy="106" r="7"/>
+                <circle cx="216" cy="65" r="7"/>
+                <circle cx="262" cy="221" r="7"/>
+                <circle cx="208" cy="224" r="7"/>
+                <circle cx="247" cy="59" r="7"/>
+                <circle cx="225" cy="149" r="7"/>
+                <circle cx="201" cy="121" r="7"/>
+                <circle cx="64" cy="86" r="7"/>
+                <circle cx="358" cy="185" r="7"/>
               </g>
-              <g class="pont__corps" fill="var(--ink)"></g>
-              <g class="pont__trafic" fill="var(--lime-deep)"></g>
             </svg>
           </div>
 
-          <div class="demo__commande">
-            <label class="demo__label" for="pontEcart">Largeur du vide</label>
-            <input class="demo__curseur" id="pontEcart" type="range"
-                   min="0" max="100" value="34"
-                   aria-describedby="pontMesures">
+          <div class="demo__commande demo__commande--interrupteur">
+            <button class="cascade__bouton" type="button" id="trophoBouton">
+              Nourrir une seule ouvrière
+            </button>
           </div>
 
-          <div class="demo__mesures" id="pontMesures" role="status" aria-live="polite">
+          <div class="demo__mesures" role="status" aria-live="polite">
             <div class="demo__mesure">
-              <span class="demo__valeur" id="pontLargeur">2,4 cm</span>
-              <span class="demo__legende">largeur à franchir</span>
+              <span class="demo__valeur" id="trophoNourries">0 / 58</span>
+              <span class="demo__legende">ouvrières nourries</span>
             </div>
             <div class="demo__mesure">
-              <span class="demo__valeur" id="pontImmobilisees">28</span>
-              <span class="demo__legende">fourmis prises dans le pont</span>
+              <span class="demo__valeur" id="trophoEchanges">0</span>
+              <span class="demo__legende">échanges bouche à bouche</span>
             </div>
             <div class="demo__mesure">
-              <span class="demo__valeur" id="pontDispo">172</span>
-              <span class="demo__legende">encore disponibles pour fourrager</span>
+              <span class="demo__valeur" id="trophoRelais">&#8212;</span>
+              <span class="demo__legende">relais depuis la source</span>
             </div>
           </div>
 
-          <figcaption class="demo__note" id="pontVerdict">
-            Chaque fourmi ne perçoit que la tension de ses voisines immédiates.
-            Aucune ne mesure le vide, et la structure trouve pourtant sa taille.
+          <figcaption class="demo__note" id="trophoNote">
+            Une seule fourmi est rentrée avec de la nourriture. Aucune ne sait qui a déjà
+            mangé, ni combien il reste à nourrir : chacune partage avec celles qu'elle touche.
           </figcaption>
         </figure>
 
@@ -381,6 +439,6 @@
   </div>
 </footer>
 
-<script src="js/main.js?v=35"></script>
+<script src="js/main.js?v=37"></script>
 </body>
 </html>

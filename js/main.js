@@ -271,84 +271,130 @@
   }
 
   /* ---------------------------------------------------------
-     1 quater. Le pont vivant  (superorganisme.html)
+     1 quater. La trophallaxie  (superorganisme.html)
 
-     L'article affirme que la structure s'ajuste au vide « sans qu'aucune
-     fourmi ne connaisse la largeur réelle ». La démonstration doit donc être
-     honnête sur ce point : on ne calcule jamais une longueur cible, on ajoute
-     des fourmis tant que la brèche n'est pas comblée. Le nombre obtenu est
-     une conséquence, pas une consigne.
+     L'article pose la colonie comme un corps ; c'est ici qu'on peut le
+     montrer plutôt que l'affirmer. Une seule ouvrière rentre avec du liquide
+     et il se répand de proche en proche.
 
-     L'arbitrage est réel : chaque fourmi engagée dans le pont est une fourmi
-     qui ne fourrage plus. Au-delà d'un certain coût, la colonie renonce —
-     c'est ce que montrent les travaux de Reid et al. sur Eciton.
+     Le voisinage est calculé à partir des distances réelles entre fourmis :
+     personne ne dispose d'une liste de qui nourrir, chacune ne touche que
+     celles qui sont à portée. La propagation est un parcours en largeur, ce
+     qui n'est pas un raccourci d'implémentation mais exactement le phénomène —
+     tout le monde à un relais donné mange en même temps.
      --------------------------------------------------------- */
 
-  var demoPont = document.querySelector('.demo--pont');
+  var demoTropho = document.querySelector('.demo--trophallaxie');
 
-  if (demoPont) {
-    var curseur = demoPont.querySelector('#pontEcart');
-    var corps = demoPont.querySelector('.pont__corps');
-    var trafic = demoPont.querySelector('.pont__trafic');
-    var elLargeur = demoPont.querySelector('#pontLargeur');
-    var elPrises = demoPont.querySelector('#pontImmobilisees');
-    var elDispo = demoPont.querySelector('#pontDispo');
-    var elVerdict = demoPont.querySelector('#pontVerdict');
+  if (demoTropho) {
+    var fourmis = Array.prototype.slice.call(demoTropho.querySelectorAll('.tropho__fourmis circle'));
+    var gLiens = demoTropho.querySelector('.tropho__liens');
+    var btnTropho = demoTropho.querySelector('#trophoBouton');
+    var elNourries = demoTropho.querySelector('#trophoNourries');
+    var elEchanges = demoTropho.querySelector('#trophoEchanges');
+    var elRelais = demoTropho.querySelector('#trophoRelais');
+    var noteTropho = demoTropho.querySelector('#trophoNote');
 
-    var EFFECTIF = 200;      /* fourmis mobilisables */
-    var PAS = 4;             /* les corps se chevauchent : elles s'agrippent */
-    var BERGE_G = 140, BERGE_D = 380, LARGEUR_MAX = BERGE_D - BERGE_G;
+    var PORTEE = 74;    /* une fourmi ne touche que ses voisines immédiates */
+    var CADENCE = 460;  /* durée d'un relais */
 
-    /*
-       Seuil de renoncement. Reid et al. ont montré que les colonies d'Eciton
-       cessent d'allonger un pont lorsque la fraction d'ouvrières immobilisées
-       devient trop coûteuse au regard du trafic qu'il permet. On cale la
-       rupture sur un cinquième de l'effectif, ce qui la place dans le dernier
-       tiers de la course du curseur.
-    */
-    var SEUIL = Math.round(EFFECTIF * 0.20);
+    var pos = fourmis.map(function (c) {
+      return { x: +c.getAttribute('cx'), y: +c.getAttribute('cy') };
+    });
 
-    var rendrePont = function () {
-      var part = curseur.value / 100;
-      var vide = Math.round(part * LARGEUR_MAX);
-      var gaucheX = BERGE_G + (LARGEUR_MAX - vide) / 2;
-      var droiteX = gaucheX + vide;
+    /* Voisinage par distance, et non par une liste écrite d'avance. */
+    var voisins = pos.map(function (a, i) {
+      var v = [];
+      pos.forEach(function (b, j) {
+        if (i === j) return;
+        if (Math.hypot(a.x - b.x, a.y - b.y) <= PORTEE) v.push(j);
+      });
+      return v;
+    });
 
-      /*
-         On avance depuis chaque berge, une fourmi après l'autre, jusqu'à ce
-         que les deux fronts se rejoignent. Personne ne mesure le vide.
-      */
-      var pts = [], g = gaucheX, d = droiteX, cote = 0;
-      while (d - g > PAS * 0.9 && pts.length < 120) {
-        if (cote === 0) { pts.push(g); g += PAS; } else { d -= PAS; pts.push(d); }
-        cote = 1 - cote;
-      }
+    /* Les contacts, tracés une fois : ce sont eux qui rendent le réseau lisible. */
+    var traits = [];
+    voisins.forEach(function (v, i) {
+      v.forEach(function (j) {
+        if (j > i) traits.push('<line x1="' + pos[i].x + '" y1="' + pos[i].y +
+                               '" x2="' + pos[j].x + '" y2="' + pos[j].y + '"/>');
+      });
+    });
+    gLiens.innerHTML = traits.join('');
 
-      var prises = pts.length;
-      var rompu = prises > SEUIL;
-      var dispo = Math.max(0, EFFECTIF - prises);
+    var depart = fourmis.findIndex(function (c) { return c.dataset.source === 'true'; });
+    if (depart < 0) depart = 0;
 
-      corps.innerHTML = pts.map(function (x, i) {
-        var y = 130 - Math.sin((x - gaucheX) / Math.max(1, vide) * Math.PI) * (vide * 0.06);
-        return '<circle cx="' + x.toFixed(1) + '" cy="' + y.toFixed(1) + '" r="2.6"/>';
-      }).join('');
+    var minuteriesT = [], enCours = false;
+    var douxT = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-      /* Les fourmis qui traversent, seulement s'il y a un pont qui tient. */
-      trafic.innerHTML = (rompu || vide < PAS * 2) ? '' : [0.2, 0.45, 0.7].map(function (f) {
-        return '<circle cx="' + (gaucheX + vide * f).toFixed(1) + '" cy="119" r="2.9"/>';
-      }).join('');
-
-      demoPont.dataset.rompu = rompu ? 'true' : 'false';
-      elLargeur.textContent = (vide / 100).toFixed(1).replace('.', ',') + ' cm';
-      elPrises.textContent = prises;
-      elDispo.textContent = dispo;
-      elVerdict.textContent = rompu
-        ? 'Trop de fourmis immobilisées pour ce que le passage rapporte : la colonie renonce et le pont se dissout. Personne n\'a pris cette décision, chacune a simplement lâché prise.'
-        : 'Chaque fourmi ne perçoit que la tension de ses voisines immédiates. Aucune ne mesure le vide, et la structure trouve pourtant sa taille.';
+    var remettre = function () {
+      minuteriesT.forEach(clearTimeout);
+      minuteriesT = [];
+      fourmis.forEach(function (c) { c.dataset.nourrie = 'false'; });
+      elNourries.textContent = '0 / ' + fourmis.length;
+      elEchanges.textContent = '0';
+      elRelais.textContent = '—';
+      demoTropho.dataset.fini = 'false';
     };
 
-    curseur.addEventListener('input', rendrePont);
-    rendrePont();
+    var diffuser = function () {
+      remettre();
+      enCours = true;
+      btnTropho.disabled = true;
+
+      var vus = {}, front = [depart], relais = 0, nourries = 0, echanges = 0;
+      vus[depart] = true;
+
+      var etape = function () {
+        if (!front.length) {
+          enCours = false;
+          btnTropho.disabled = false;
+          btnTropho.textContent = 'Recommencer';
+          demoTropho.dataset.fini = 'true';
+          /*
+             `relais` a été incrémenté une fois de plus après le dernier
+             affichage : on retranche pour que la note et le compteur
+             annoncent le même nombre.
+          */
+          noteTropho.textContent =
+            'Toute la colonie est nourrie en ' + (relais - 1) + ' relais, à partir d\'une seule ' +
+            'ouvrière. Aucune n\'a jamais su combien il restait à nourrir : le liquide ' +
+            'circule comme dans un appareil circulatoire, sans que personne le dirige.';
+          return;
+        }
+
+        var suivant = [];
+        front.forEach(function (i) {
+          fourmis[i].dataset.nourrie = 'true';
+          nourries++;
+          voisins[i].forEach(function (j) {
+            if (vus[j]) return;
+            vus[j] = true; echanges++;
+            suivant.push(j);
+          });
+        });
+
+        elNourries.textContent = nourries + ' / ' + fourmis.length;
+        elEchanges.textContent = echanges;
+        elRelais.textContent = relais;
+
+        front = suivant;
+        relais++;
+        minuteriesT.push(setTimeout(etape, douxT ? 0 : CADENCE));
+      };
+
+      etape();
+    };
+
+    btnTropho.addEventListener('click', function () {
+      if (enCours) return;
+      btnTropho.textContent = 'Nourrir une seule ouvrière';
+      noteTropho.textContent =
+        'Une seule fourmi est rentrée avec de la nourriture. Aucune ne sait qui a déjà ' +
+        'mangé, ni combien il reste à nourrir : chacune partage avec celles qu\'elle touche.';
+      diffuser();
+    });
   }
 
   /* ---------------------------------------------------------

@@ -1796,23 +1796,32 @@ p { margin: 0; }
   .demo__mesures { grid-template-columns: 1fr; gap: 14px; }
 }
 
-/* ---------- Le pont vivant ---------- */
+/* ---------- La trophallaxie ---------- */
 
 .demo__scene { margin-bottom: 26px; }
 
-.pont { width: 100%; height: auto; display: block; }
+.tropho { width: 100%; height: auto; display: block; }
+
+.tropho__liens { opacity: 0.55; }
 
 /*
-   Aucune transition sur les fourmis du pont : leur position est recalculée à
-   chaque mouvement du curseur, et une transition ferait traîner la structure
-   derrière le geste au lieu de la coller dessus.
+   Le passage au vert n'est pas décoratif : c'est le seul signal qui dit
+   qu'une fourmi a mangé. Le décalage est porté par le script, relais par
+   relais ; la transition ne fait qu'adoucir chaque bascule.
 */
-.pont__corps circle,
-.pont__trafic circle { transition: opacity 160ms ease; }
+.tropho__fourmis circle {
+  transition: fill 300ms var(--ease-out), r 300ms var(--ease-out);
+}
 
-.demo--pont[data-rompu='true'] .pont__corps { opacity: 0.25; }
+.tropho__fourmis circle[data-nourrie='true'] { fill: var(--lime-deep); }
 
-.demo--pont[data-rompu='true'] .demo__note { color: var(--ink); font-weight: 500; }
+/* La source reste identifiable : c'est le point de départ de la démonstration. */
+.tropho__fourmis circle[data-source='true'] {
+  stroke: var(--ink);
+  stroke-width: 2;
+}
+
+.demo--trophallaxie[data-fini='true'] .demo__note { color: var(--ink); }
 
 /* ---------- La cascade trophique ---------- */
 
