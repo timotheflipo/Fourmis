@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=32">
+<link rel="stylesheet" href="css/style.css?v=35">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%23333'/><circle cx='50' cy='30' r='11' fill='%23d7eb80'/><circle cx='50' cy='52' r='9' fill='%23d7eb80'/><circle cx='50' cy='74' r='13' fill='%23d7eb80'/></svg>">
 </head>
 <body>
@@ -174,6 +174,54 @@
           de mouvement pour former, le temps d'un franchissement, un organe collectif.
         </p>
 
+
+        <!--
+          Le pont vivant. L'article affirme que la structure s'ajuste à la
+          largeur du vide « sans qu'aucune fourmi ne connaisse la largeur
+          réelle ». Le curseur laisse vérifier l'affirmation : on écarte les
+          berges, le pont se refait, et le compteur montre l'arbitrage se
+          résoudre alors que personne ne le calcule.
+        -->
+        <figure class="demo demo--pont">
+          <div class="demo__scene">
+            <svg class="pont" viewBox="0 84 520 116" aria-hidden="true">
+              <g class="pont__berges" fill="var(--ash)">
+                <path class="pont__berge-g" d="M0 130 H140 V200 H0 Z"/>
+                <path class="pont__berge-d" d="M380 130 H520 V200 H380 Z"/>
+              </g>
+              <g class="pont__corps" fill="var(--ink)"></g>
+              <g class="pont__trafic" fill="var(--lime-deep)"></g>
+            </svg>
+          </div>
+
+          <div class="demo__commande">
+            <label class="demo__label" for="pontEcart">Largeur du vide</label>
+            <input class="demo__curseur" id="pontEcart" type="range"
+                   min="0" max="100" value="34"
+                   aria-describedby="pontMesures">
+          </div>
+
+          <div class="demo__mesures" id="pontMesures" role="status" aria-live="polite">
+            <div class="demo__mesure">
+              <span class="demo__valeur" id="pontLargeur">2,4 cm</span>
+              <span class="demo__legende">largeur à franchir</span>
+            </div>
+            <div class="demo__mesure">
+              <span class="demo__valeur" id="pontImmobilisees">28</span>
+              <span class="demo__legende">fourmis prises dans le pont</span>
+            </div>
+            <div class="demo__mesure">
+              <span class="demo__valeur" id="pontDispo">172</span>
+              <span class="demo__legende">encore disponibles pour fourrager</span>
+            </div>
+          </div>
+
+          <figcaption class="demo__note" id="pontVerdict">
+            Chaque fourmi ne perçoit que la tension de ses voisines immédiates.
+            Aucune ne mesure le vide, et la structure trouve pourtant sa taille.
+          </figcaption>
+        </figure>
+
         <figure>
           <img src="images/photos/fourmis-pont.jpg" alt="Fourmis agrippées les unes aux autres le long d'une tige" loading="lazy">
           <figcaption>
@@ -333,6 +381,6 @@
   </div>
 </footer>
 
-<script src="js/main.js?v=32"></script>
+<script src="js/main.js?v=35"></script>
 </body>
 </html>

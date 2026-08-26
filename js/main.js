@@ -271,6 +271,132 @@
   }
 
   /* ---------------------------------------------------------
+     1 quater. Le pont vivant  (superorganisme.html)
+
+     L'article affirme que la structure s'ajuste au vide « sans qu'aucune
+     fourmi ne connaisse la largeur réelle ». La démonstration doit donc être
+     honnête sur ce point : on ne calcule jamais une longueur cible, on ajoute
+     des fourmis tant que la brèche n'est pas comblée. Le nombre obtenu est
+     une conséquence, pas une consigne.
+
+     L'arbitrage est réel : chaque fourmi engagée dans le pont est une fourmi
+     qui ne fourrage plus. Au-delà d'un certain coût, la colonie renonce —
+     c'est ce que montrent les travaux de Reid et al. sur Eciton.
+     --------------------------------------------------------- */
+
+  var demoPont = document.querySelector('.demo--pont');
+
+  if (demoPont) {
+    var curseur = demoPont.querySelector('#pontEcart');
+    var corps = demoPont.querySelector('.pont__corps');
+    var trafic = demoPont.querySelector('.pont__trafic');
+    var elLargeur = demoPont.querySelector('#pontLargeur');
+    var elPrises = demoPont.querySelector('#pontImmobilisees');
+    var elDispo = demoPont.querySelector('#pontDispo');
+    var elVerdict = demoPont.querySelector('#pontVerdict');
+
+    var EFFECTIF = 200;      /* fourmis mobilisables */
+    var PAS = 4;             /* les corps se chevauchent : elles s'agrippent */
+    var BERGE_G = 140, BERGE_D = 380, LARGEUR_MAX = BERGE_D - BERGE_G;
+
+    /*
+       Seuil de renoncement. Reid et al. ont montré que les colonies d'Eciton
+       cessent d'allonger un pont lorsque la fraction d'ouvrières immobilisées
+       devient trop coûteuse au regard du trafic qu'il permet. On cale la
+       rupture sur un cinquième de l'effectif, ce qui la place dans le dernier
+       tiers de la course du curseur.
+    */
+    var SEUIL = Math.round(EFFECTIF * 0.20);
+
+    var rendrePont = function () {
+      var part = curseur.value / 100;
+      var vide = Math.round(part * LARGEUR_MAX);
+      var gaucheX = BERGE_G + (LARGEUR_MAX - vide) / 2;
+      var droiteX = gaucheX + vide;
+
+      /*
+         On avance depuis chaque berge, une fourmi après l'autre, jusqu'à ce
+         que les deux fronts se rejoignent. Personne ne mesure le vide.
+      */
+      var pts = [], g = gaucheX, d = droiteX, cote = 0;
+      while (d - g > PAS * 0.9 && pts.length < 120) {
+        if (cote === 0) { pts.push(g); g += PAS; } else { d -= PAS; pts.push(d); }
+        cote = 1 - cote;
+      }
+
+      var prises = pts.length;
+      var rompu = prises > SEUIL;
+      var dispo = Math.max(0, EFFECTIF - prises);
+
+      corps.innerHTML = pts.map(function (x, i) {
+        var y = 130 - Math.sin((x - gaucheX) / Math.max(1, vide) * Math.PI) * (vide * 0.06);
+        return '<circle cx="' + x.toFixed(1) + '" cy="' + y.toFixed(1) + '" r="2.6"/>';
+      }).join('');
+
+      /* Les fourmis qui traversent, seulement s'il y a un pont qui tient. */
+      trafic.innerHTML = (rompu || vide < PAS * 2) ? '' : [0.2, 0.45, 0.7].map(function (f) {
+        return '<circle cx="' + (gaucheX + vide * f).toFixed(1) + '" cy="119" r="2.9"/>';
+      }).join('');
+
+      demoPont.dataset.rompu = rompu ? 'true' : 'false';
+      elLargeur.textContent = (vide / 100).toFixed(1).replace('.', ',') + ' cm';
+      elPrises.textContent = prises;
+      elDispo.textContent = dispo;
+      elVerdict.textContent = rompu
+        ? 'Trop de fourmis immobilisées pour ce que le passage rapporte : la colonie renonce et le pont se dissout. Personne n\'a pris cette décision, chacune a simplement lâché prise.'
+        : 'Chaque fourmi ne perçoit que la tension de ses voisines immédiates. Aucune ne mesure le vide, et la structure trouve pourtant sa taille.';
+    };
+
+    curseur.addEventListener('input', rendrePont);
+    rendrePont();
+  }
+
+  /* ---------------------------------------------------------
+     1 quinquies. La cascade trophique  (acacia.html)
+
+     La thèse de l'article est que l'effet remonte la chaîne. Le décalage
+     entre les maillons est donc le sujet, pas un ornement : c'est lui qui
+     montre la propagation. Sans lui, on ne verrait qu'un avant et un après.
+     --------------------------------------------------------- */
+
+  var demoCascade = document.querySelector('.demo--cascade');
+
+  if (demoCascade) {
+    var bouton = demoCascade.querySelector('#cascadeBouton');
+    var maillons = demoCascade.querySelectorAll('.cascade__maillon');
+    var minuteries = [];
+    var doux = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var DELAI = doux ? 0 : 380;
+
+    var basculer = function (sans) {
+      minuteries.forEach(clearTimeout);
+      minuteries = [];
+      demoCascade.dataset.sans = sans ? 'true' : 'false';
+      bouton.setAttribute('aria-pressed', sans ? 'true' : 'false');
+      bouton.innerHTML = sans
+        ? 'Rétablir <em>Crematogaster</em>'
+        : 'Retirer <em>Crematogaster</em>';
+
+      Array.prototype.forEach.call(maillons, function (m, i) {
+        /*
+           À l'aller, la perturbation part du bas de la chaîne. Au retour,
+           elle repart aussi du bas : c'est la fourmi qui revient, et le
+           couvert met le même temps à se reconstituer.
+        */
+        m.dataset.actif = 'false';
+        minuteries.push(setTimeout(function () {
+          m.dataset.actif = 'true';
+          minuteries.push(setTimeout(function () { m.dataset.actif = 'false'; }, 520));
+        }, i * DELAI));
+      });
+    };
+
+    bouton.addEventListener('click', function () {
+      basculer(demoCascade.dataset.sans !== 'true');
+    });
+  }
+
+  /* ---------------------------------------------------------
      2. Comparateur avant / après
      --------------------------------------------------------- */
 

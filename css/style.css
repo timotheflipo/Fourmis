@@ -1707,6 +1707,202 @@ p { margin: 0; }
 .next-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; margin-top: 48px; }
 .next-cards .card { cursor: pointer; }
 
+/* ---------- Démonstrations interactives ---------- */
+
+/*
+   Cadre commun aux mécaniques des articles. Elles reprennent le panneau de la
+   carte du monde — même aplat, même arrondi, même marge — pour qu'un lecteur
+   les reconnaisse comme « une chose à manipuler » d'un article à l'autre.
+*/
+.demo {
+  margin: 48px 0;
+  padding: 32px;
+  background: var(--warm-mist);
+  border-radius: var(--radius-card);
+}
+
+.demo__commande { display: grid; gap: 10px; }
+
+.demo__label {
+  font-size: var(--text-caption);
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--stone);
+}
+
+/*
+   Le curseur est le seul élément du site qu'on saisit à la souris : il doit
+   avoir une cible confortable et un état de focus franc.
+*/
+.demo__curseur {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 4px;
+  border-radius: var(--radius-pill);
+  background: var(--ash);
+  cursor: ew-resize;
+}
+.demo__curseur::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 26px; height: 26px;
+  border-radius: var(--radius-pill);
+  background: var(--ink);
+  border: 3px solid var(--warm-mist);
+  cursor: grab;
+}
+.demo__curseur::-moz-range-thumb {
+  width: 26px; height: 26px;
+  border: 3px solid var(--warm-mist);
+  border-radius: var(--radius-pill);
+  background: var(--ink);
+  cursor: grab;
+}
+.demo__curseur:focus-visible { outline: 2px solid var(--ink); outline-offset: 6px; }
+
+.demo__mesures {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  margin-top: 26px;
+  padding-top: 22px;
+  border-top: 1px solid var(--ash);
+}
+
+.demo__mesure { display: flex; flex-direction: column; gap: 5px; }
+
+.demo__valeur {
+  font-size: var(--text-heading);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+}
+
+.demo__legende { font-size: var(--text-caption); line-height: 1.4; color: var(--stone); }
+
+.demo__note {
+  margin-top: 22px;
+  font-size: var(--text-body-sm);
+  line-height: 1.5;
+  color: var(--stone);
+  text-wrap: pretty;
+}
+
+@media (max-width: 620px) {
+  .demo { padding: 22px; }
+  .demo__mesures { grid-template-columns: 1fr; gap: 14px; }
+}
+
+/* ---------- Le pont vivant ---------- */
+
+.demo__scene { margin-bottom: 26px; }
+
+.pont { width: 100%; height: auto; display: block; }
+
+/*
+   Aucune transition sur les fourmis du pont : leur position est recalculée à
+   chaque mouvement du curseur, et une transition ferait traîner la structure
+   derrière le geste au lieu de la coller dessus.
+*/
+.pont__corps circle,
+.pont__trafic circle { transition: opacity 160ms ease; }
+
+.demo--pont[data-rompu='true'] .pont__corps { opacity: 0.25; }
+
+.demo--pont[data-rompu='true'] .demo__note { color: var(--ink); font-weight: 500; }
+
+/* ---------- La cascade trophique ---------- */
+
+.cascade__bouton {
+  justify-self: start;
+  border: 1px solid var(--ink);
+  border-radius: var(--radius-pill);
+  background: transparent;
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: var(--text-body-sm);
+  font-weight: 600;
+  line-height: 1;
+  padding: 13px 22px;
+  cursor: pointer;
+  transition: background-color var(--dur-hover) ease, color var(--dur-hover) ease,
+              transform var(--dur-press) var(--ease-out);
+}
+.cascade__bouton:active { transform: scale(0.97); }
+@media (hover: hover) and (pointer: fine) {
+  .cascade__bouton:hover { background: var(--ink); color: var(--white); }
+}
+.cascade__bouton[aria-pressed='true'] { background: var(--ink); color: var(--white); }
+
+.cascade {
+  list-style: none;
+  margin: 26px 0 0;
+  padding: 0;
+  display: grid;
+  gap: 1px;
+  background: var(--ash);
+  border-radius: var(--radius-card);
+  overflow: hidden;
+}
+
+.cascade__maillon {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: baseline;
+  gap: 4px 20px;
+  padding: 16px 18px;
+  background: var(--warm-mist);
+}
+
+.cascade__nom { font-size: var(--text-body); font-weight: 700; color: var(--ink); }
+
+.cascade__quoi {
+  grid-column: 1;
+  font-size: var(--text-caption);
+  color: var(--stone);
+}
+
+/*
+   Les deux états occupent la même case de la grille : ils se remplacent sans
+   que la ligne change de largeur, sinon la bascule ferait sauter la colonne.
+*/
+.cascade__etat {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  display: grid;
+  align-items: center;
+  font-size: var(--text-body-sm);
+  font-weight: 600;
+  text-align: right;
+}
+
+.cascade__avec,
+.cascade__sans {
+  grid-area: 1 / 1;
+  transition: opacity 260ms var(--ease-out), transform 260ms var(--ease-out);
+}
+
+.cascade__avec { color: var(--ink); }
+.cascade__sans { color: #9a4a2f; opacity: 0; transform: translateY(6px); }
+
+.demo--cascade[data-sans='true'] .cascade__avec { opacity: 0; transform: translateY(-6px); }
+.demo--cascade[data-sans='true'] .cascade__sans { opacity: 1; transform: none; }
+
+/* Le maillon qui vient de basculer se signale brièvement. */
+.cascade__maillon[data-actif='true'] { background: var(--white); }
+.cascade__maillon { transition: background-color 320ms ease; }
+
+/*
+   Mouvement réduit : les états se remplacent sans glisser, et la cascade
+   devient immédiate. Elle garde son sens, on perd seulement la propagation.
+*/
+@media (prefers-reduced-motion: reduce) {
+  .cascade__avec, .cascade__sans { transform: none !important; }
+}
+
 /* ---------- La spirale de la mort ---------- */
 
 /*
