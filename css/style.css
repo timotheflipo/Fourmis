@@ -1726,6 +1726,9 @@ p { margin: 0; }
    Hauteur minimale calée sur le diamètre du cercle : coupé par un bord, il ne
    montrait qu'un arc, alors que c'est précisément le fait d'être fermé qui
    porte le sens. Une boucle ouverte, on en sort.
+
+   Le texte occupe toute la largeur et passe au-dessus du cercle. C'est ce qui
+   oblige à assombrir sa couleur — voir la note sur l'opacité plus bas.
 */
 .callout--spirale {
   position: relative;
@@ -1735,29 +1738,40 @@ p { margin: 0; }
   align-items: center;
 }
 
-.callout--spirale .callout__texte { max-width: 62%; }
+/* Plus de colonne réduite : le texte occupe toute la case. */
+.callout--spirale .callout__texte { max-width: none; }
+
+/*
+   Texte assombri, uniquement dans cet encadré. C'est ce qui rend le cercle
+   visible sans descendre sous le seuil de contraste, et c'est défendable en
+   soi : un encadré est un bloc de mise en avant, son texte peut être plus
+   appuyé que le corps courant.
+*/
+.callout--spirale .callout__texte p { color: var(--ink); }
 
 @media (max-width: 620px) {
   .callout--spirale { min-height: 0; display: block; }
-  .callout--spirale .callout__texte { max-width: none; }
 }
 
 .spirale {
   position: absolute;
   top: 50%;
-  right: 26px;
+  right: 30px;
   transform: translateY(-50%);
-  width: 216px;
+  width: 232px;
   z-index: 0;
   pointer-events: none;
 
   /*
-     Vert accent très dilué. À pleine opacité, le cercle passerait devant le
-     texte au lieu de le porter ; à cette valeur, il se remarque au deuxième
-     regard et jamais avant d'avoir lu le paragraphe.
+     Le texte passe désormais par-dessus les points, ce qui fait du contraste
+     la contrainte qui décide de tout. Mesuré sur le pire cas, un point à
+     pleine opacité derrière une lettre : le gris du corps de texte tombait à
+     3,35:1, sous le seuil, ce qui plafonnait le cercle à 0,24 d'opacité —
+     autant dire invisible. En passant le texte de l'encadré à `--ink`, le
+     même pire cas donne 8,07:1, et le cercle peut enfin se voir.
   */
   color: var(--lime-deep);
-  opacity: 0.5;
+  opacity: 0.72;
 }
 
 .spirale__svg { width: 100%; height: auto; display: block; }
