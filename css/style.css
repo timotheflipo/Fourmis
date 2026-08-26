@@ -1712,23 +1712,53 @@ p { margin: 0; }
 /*
    Le seul cercle du site, et la seule animation qui ne s'arrête jamais.
 
-   Les deux exceptions sont volontaires et vont ensemble : le sujet de cette
-   section est une boucle dont les fourmis ne sortent pas. Une file régulière
-   aurait paru immobile en tournant — ce sont les écarts irréguliers, entre 6°
-   et 23°, qui rendent la rotation lisible.
+   Les deux exceptions vont ensemble : le sujet de cette section est une
+   boucle dont les fourmis ne sortent pas. Le cercle tourne derrière le
+   paragraphe qui l'explique plutôt qu'à côté — la texture et le texte
+   disent la même chose, au même endroit.
 
-   Une révolution dure 54 secondes. Assez lent pour qu'on ne le remarque pas
-   tout de suite, et c'est le but : on comprend la boucle après coup.
+   Une file régulière aurait paru immobile en tournant : ce sont les écarts
+   irréguliers, de 5,7° à 22,7°, qui rendent la rotation lisible. Une
+   révolution dure 54 s, assez lent pour qu'on ne le remarque pas tout de
+   suite, ce qui est le but.
 */
-.spirale {
-  margin: 56px 0;
+/*
+   Hauteur minimale calée sur le diamètre du cercle : coupé par un bord, il ne
+   montrait qu'un arc, alors que c'est précisément le fait d'être fermé qui
+   porte le sens. Une boucle ouverte, on en sort.
+*/
+.callout--spirale {
+  position: relative;
+  overflow: hidden;
+  min-height: 268px;
   display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: 22px;
 }
 
-.spirale__cadre { width: 240px; max-width: 60vw; color: var(--stone); }
+.callout--spirale .callout__texte { max-width: 62%; }
+
+@media (max-width: 620px) {
+  .callout--spirale { min-height: 0; display: block; }
+  .callout--spirale .callout__texte { max-width: none; }
+}
+
+.spirale {
+  position: absolute;
+  top: 50%;
+  right: 26px;
+  transform: translateY(-50%);
+  width: 216px;
+  z-index: 0;
+  pointer-events: none;
+
+  /*
+     Vert accent très dilué. À pleine opacité, le cercle passerait devant le
+     texte au lieu de le porter ; à cette valeur, il se remarque au deuxième
+     regard et jamais avant d'avoir lu le paragraphe.
+  */
+  color: var(--lime-deep);
+  opacity: 0.5;
+}
 
 .spirale__svg { width: 100%; height: auto; display: block; }
 
@@ -1739,25 +1769,27 @@ p { margin: 0; }
   /*
      En pause par défaut : l'observateur ne la lance qu'une fois le bloc à
      l'écran. Une boucle infinie qui tourne pendant toute la visite pour
-     n'être vue que quelques secondes, c'est le reproche que je faisais au
-     chevron du hero — il n'y a pas de raison de le refaire ici.
+     n'être vue que quelques secondes, c'est le reproche fait au chevron
+     du hero — il n'y a pas de raison de le refaire ici.
   */
   animation-play-state: paused;
 }
 
-.spirale[data-visible='true'] .spirale__file { animation-play-state: running; }
+.callout--spirale[data-visible='true'] .spirale__file { animation-play-state: running; }
 
 @keyframes spirale-tourne {
   to { transform: rotate(360deg); }
 }
 
-.spirale__legende {
-  max-width: 340px;
-  text-align: center;
-  font-size: var(--text-body-sm);
-  line-height: 1.5;
-  color: var(--stone);
-  text-wrap: pretty;
+/* Le texte repasse au-dessus de la texture. */
+.callout__texte { position: relative; z-index: 1; }
+
+/*
+   Sous cette largeur, le cercle occuperait la place du texte au lieu de
+   l'accompagner : il sort de la mise en page.
+*/
+@media (max-width: 620px) {
+  .spirale { display: none; }
 }
 
 /*

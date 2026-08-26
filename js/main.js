@@ -257,7 +257,7 @@
      secondes fait travailler le compositeur pour rien.
      --------------------------------------------------------- */
 
-  var spirale = document.querySelector('.spirale');
+  var spirale = document.querySelector('.callout--spirale');
 
   if (spirale && 'IntersectionObserver' in window) {
     new IntersectionObserver(function (entrees) {
