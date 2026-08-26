@@ -250,6 +250,27 @@
   }
 
   /* ---------------------------------------------------------
+     1 ter. Spirale de la mort
+
+     La file ne tourne que lorsqu'elle est à l'écran. Une animation infinie
+     qui tourne pendant toute la visite pour n'être regardée que quelques
+     secondes fait travailler le compositeur pour rien.
+     --------------------------------------------------------- */
+
+  var spirale = document.querySelector('.spirale');
+
+  if (spirale && 'IntersectionObserver' in window) {
+    new IntersectionObserver(function (entrees) {
+      entrees.forEach(function (e) {
+        spirale.dataset.visible = e.isIntersecting ? 'true' : 'false';
+      });
+    }, { threshold: 0.15 }).observe(spirale);
+  } else if (spirale) {
+    /* Sans observateur, on laisse tourner : mieux vaut l'effet que rien. */
+    spirale.dataset.visible = 'true';
+  }
+
+  /* ---------------------------------------------------------
      2. Comparateur avant / après
      --------------------------------------------------------- */
 

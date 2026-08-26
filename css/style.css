@@ -1707,6 +1707,68 @@ p { margin: 0; }
 .next-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; margin-top: 48px; }
 .next-cards .card { cursor: pointer; }
 
+/* ---------- La spirale de la mort ---------- */
+
+/*
+   Le seul cercle du site, et la seule animation qui ne s'arrête jamais.
+
+   Les deux exceptions sont volontaires et vont ensemble : le sujet de cette
+   section est une boucle dont les fourmis ne sortent pas. Une file régulière
+   aurait paru immobile en tournant — ce sont les écarts irréguliers, entre 6°
+   et 23°, qui rendent la rotation lisible.
+
+   Une révolution dure 54 secondes. Assez lent pour qu'on ne le remarque pas
+   tout de suite, et c'est le but : on comprend la boucle après coup.
+*/
+.spirale {
+  margin: 56px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 22px;
+}
+
+.spirale__cadre { width: 240px; max-width: 60vw; color: var(--stone); }
+
+.spirale__svg { width: 100%; height: auto; display: block; }
+
+.spirale__file {
+  transform-origin: 50% 50%;
+  animation: spirale-tourne 54s linear infinite;
+
+  /*
+     En pause par défaut : l'observateur ne la lance qu'une fois le bloc à
+     l'écran. Une boucle infinie qui tourne pendant toute la visite pour
+     n'être vue que quelques secondes, c'est le reproche que je faisais au
+     chevron du hero — il n'y a pas de raison de le refaire ici.
+  */
+  animation-play-state: paused;
+}
+
+.spirale[data-visible='true'] .spirale__file { animation-play-state: running; }
+
+@keyframes spirale-tourne {
+  to { transform: rotate(360deg); }
+}
+
+.spirale__legende {
+  max-width: 340px;
+  text-align: center;
+  font-size: var(--text-body-sm);
+  line-height: 1.5;
+  color: var(--stone);
+  text-wrap: pretty;
+}
+
+/*
+   Mouvement réduit : la file s'arrête. Elle garde tout son sens — un cercle
+   fermé se lit sans avoir besoin de tourner — et une rotation continue est
+   exactement ce qui déclenche une gêne vestibulaire.
+*/
+@media (prefers-reduced-motion: reduce) {
+  .spirale__file { animation: none; }
+}
+
 /* ---------- Mouvement ---------- */
 
 /*
