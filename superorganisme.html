@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=40">
+<link rel="stylesheet" href="css/style.css?v=43">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%23333'/><circle cx='50' cy='30' r='11' fill='%23d7eb80'/><circle cx='50' cy='52' r='9' fill='%23d7eb80'/><circle cx='50' cy='74' r='13' fill='%23d7eb80'/></svg>">
 </head>
 <body>
@@ -207,76 +207,6 @@
           culture contre un champignon pathogène, <em>Escovopsis</em>.
         </p>
 
-        <!--
-          Le cycle du champignon. La section décrit une boucle, et une boucle
-          est précisément ce qu'un paragraphe raconte mal : il faut arriver à
-          la fin pour comprendre que ça revient au début. Ici on la voit
-          tourner, et le passage de la dernière étape à la deuxième — les
-          enzymes qui retombent sur la pâte — est le moment où l'on comprend
-          que la fourmi ensemence son propre compost sans le savoir.
-        -->
-        <figure class="demo demo--cycle">
-          <div class="cycle">
-            <svg class="cycle__roue" viewBox="0 0 236 236" aria-hidden="true">
-              <g class="cycle__fleches" fill="none" stroke="var(--ash)" stroke-width="2">
-                <path class="cycle__fleche" data-rang="0" d="M136.7 38.2 A82 82 0 0 1 188.2 75.5"/>
-                <path class="cycle__fleche" data-rang="1" d="M199.7 111.1 A82 82 0 0 1 180.1 171.6"/>
-                <path class="cycle__fleche" data-rang="2" d="M149.8 193.6 A82 82 0 0 1 86.2 193.6"/>
-                <path class="cycle__fleche" data-rang="3" d="M55.9 171.6 A82 82 0 0 1 36.3 111.1"/>
-                <path class="cycle__fleche" data-rang="4" d="M47.8 75.5 A82 82 0 0 1 99.3 38.2"/>
-              </g>
-              <g class="cycle__noeuds" fill="var(--warm-mist)" stroke="var(--ash)" stroke-width="2">
-                <circle class="cycle__noeud" data-rang="0" cx="118.0" cy="36.0" r="13"/>
-                <circle class="cycle__noeud" data-rang="1" cx="196.0" cy="92.7" r="13"/>
-                <circle class="cycle__noeud" data-rang="2" cx="166.2" cy="184.3" r="13"/>
-                <circle class="cycle__noeud" data-rang="3" cx="69.8" cy="184.3" r="13"/>
-                <circle class="cycle__noeud" data-rang="4" cx="40.0" cy="92.7" r="13"/>
-              </g>
-              <g class="cycle__chiffres">
-                <text class="cycle__chiffre" data-rang="0" x="118.0" y="40.0">1</text>
-                <text class="cycle__chiffre" data-rang="1" x="196.0" y="96.7">2</text>
-                <text class="cycle__chiffre" data-rang="2" x="166.2" y="188.3">3</text>
-                <text class="cycle__chiffre" data-rang="3" x="69.8" y="188.3">4</text>
-                <text class="cycle__chiffre" data-rang="4" x="40.0" y="96.7">5</text>
-              </g>
-            </svg>
-
-            <ol class="cycle__liste" id="cycleListe" role="status" aria-live="polite">
-            <li class="cycle__etape" data-rang="0">
-              <span class="cycle__nom">La feuille</span>
-              <span class="cycle__quoi">Découpée sur l'arbre et rapportée au nid. Personne ne la mangera.</span>
-            </li>
-            <li class="cycle__etape" data-rang="1">
-              <span class="cycle__nom">La pâte</span>
-              <span class="cycle__quoi">Mâchée, puis déposée dans les chambres souterraines.</span>
-            </li>
-            <li class="cycle__etape" data-rang="2">
-              <span class="cycle__nom">Le champignon</span>
-              <span class="cycle__quoi">Il décompose la cellulose, ce dont aucune fourmi n'est capable.</span>
-            </li>
-            <li class="cycle__etape" data-rang="3">
-              <span class="cycle__nom">Les gongylidies</span>
-              <span class="cycle__quoi">Des excroissances gorgées de nutriments, récoltées et distribuées.</span>
-            </li>
-            <li class="cycle__etape" data-rang="4">
-              <span class="cycle__nom">Les enzymes</span>
-              <span class="cycle__quoi">Elles survivent au transit intestinal et retombent sur la pâte fraîche.</span>
-            </li>
-            </ol>
-          </div>
-
-          <div class="demo__commande demo__commande--interrupteur">
-            <button class="cascade__bouton" type="button" id="cycleBouton" aria-pressed="false">
-              Suivre une feuille
-            </button>
-          </div>
-
-          <figcaption class="demo__note" id="cycleNote">
-            Cinq étapes, et la cinquième ramène à la deuxième. Aucune fourmi ne connaît
-            ce circuit : elle coupe, elle mâche, elle mange.
-          </figcaption>
-        </figure>
-
         <div class="callout">
           <h4>Le superorganisme déborde de son espèce</h4>
           <p>
@@ -332,6 +262,77 @@
           à payer est une consanguinité croissante et une perte d'adaptabilité. Un corps qui
           ne meurt plus, mais qui cesse aussi d'évoluer.
         </p>
+
+        <!--
+          Le renouvellement. Aucune interaction : c'est une texture, comme la
+          spirale de « la guerre ». Les points s'effacent et reviennent en
+          décalé, la densité du champ ne bouge jamais et aucun point ne dure.
+          La section parle d'un corps dont toutes les cellules sont remplacées
+          sans qu'il cesse d'être le même : le dessin dit la même chose.
+        -->
+        <div class="callout callout--texture callout--renouv">
+          <div class="renouv" aria-hidden="true">
+            <svg class="renouv__svg" viewBox="0 0 230 200" aria-hidden="true">
+              <g class="renouv__champ" fill="currentColor">
+                <circle cx="201" cy="177" r="3.6" style="animation-delay:5.26s"/>
+                <circle cx="194" cy="28" r="3.1" style="animation-delay:5.27s"/>
+                <circle cx="134" cy="87" r="3.4" style="animation-delay:3.91s"/>
+                <circle cx="121" cy="36" r="2.7" style="animation-delay:6.12s"/>
+                <circle cx="53" cy="90" r="3.0" style="animation-delay:2.70s"/>
+                <circle cx="19" cy="29" r="2.8" style="animation-delay:5.70s"/>
+                <circle cx="157" cy="86" r="2.8" style="animation-delay:0.44s"/>
+                <circle cx="118" cy="140" r="3.2" style="animation-delay:0.84s"/>
+                <circle cx="87" cy="24" r="3.1" style="animation-delay:6.23s"/>
+                <circle cx="172" cy="115" r="3.5" style="animation-delay:0.73s"/>
+                <circle cx="147" cy="121" r="3.4" style="animation-delay:2.40s"/>
+                <circle cx="210" cy="76" r="3.2" style="animation-delay:5.38s"/>
+                <circle cx="144" cy="45" r="3.5" style="animation-delay:5.28s"/>
+                <circle cx="50" cy="70" r="3.7" style="animation-delay:6.13s"/>
+                <circle cx="179" cy="48" r="3.6" style="animation-delay:6.49s"/>
+                <circle cx="22" cy="61" r="3.3" style="animation-delay:2.03s"/>
+                <circle cx="81" cy="78" r="3.7" style="animation-delay:5.56s"/>
+                <circle cx="66" cy="32" r="3.8" style="animation-delay:5.26s"/>
+                <circle cx="172" cy="136" r="3.4" style="animation-delay:5.94s"/>
+                <circle cx="124" cy="172" r="2.7" style="animation-delay:4.61s"/>
+                <circle cx="48" cy="182" r="3.6" style="animation-delay:3.44s"/>
+                <circle cx="25" cy="86" r="3.8" style="animation-delay:6.58s"/>
+                <circle cx="19" cy="153" r="2.9" style="animation-delay:3.16s"/>
+                <circle cx="153" cy="181" r="3.5" style="animation-delay:6.38s"/>
+                <circle cx="177" cy="177" r="2.7" style="animation-delay:1.38s"/>
+                <circle cx="83" cy="167" r="3.4" style="animation-delay:6.32s"/>
+                <circle cx="154" cy="157" r="4.0" style="animation-delay:0.79s"/>
+                <circle cx="36" cy="123" r="3.7" style="animation-delay:4.23s"/>
+                <circle cx="81" cy="110" r="3.0" style="animation-delay:5.81s"/>
+                <circle cx="128" cy="107" r="2.8" style="animation-delay:3.76s"/>
+                <circle cx="109" cy="91" r="3.2" style="animation-delay:4.41s"/>
+                <circle cx="159" cy="15" r="2.8" style="animation-delay:5.69s"/>
+                <circle cx="55" cy="131" r="3.1" style="animation-delay:1.48s"/>
+                <circle cx="188" cy="100" r="3.2" style="animation-delay:0.01s"/>
+                <circle cx="136" cy="64" r="3.8" style="animation-delay:6.93s"/>
+                <circle cx="99" cy="154" r="3.8" style="animation-delay:1.30s"/>
+                <circle cx="212" cy="123" r="2.9" style="animation-delay:1.62s"/>
+                <circle cx="44" cy="158" r="3.0" style="animation-delay:4.59s"/>
+                <circle cx="94" cy="131" r="2.7" style="animation-delay:1.45s"/>
+                <circle cx="41" cy="30" r="2.9" style="animation-delay:1.27s"/>
+                <circle cx="100" cy="68" r="2.7" style="animation-delay:6.57s"/>
+                <circle cx="211" cy="14" r="2.9" style="animation-delay:3.89s"/>
+                <circle cx="86" cy="49" r="2.6" style="animation-delay:5.19s"/>
+                <circle cx="171" cy="72" r="3.6" style="animation-delay:2.67s"/>
+                <circle cx="201" cy="148" r="3.2" style="animation-delay:0.19s"/>
+                <circle cx="213" cy="39" r="3.3" style="animation-delay:2.35s"/>
+              </g>
+            </svg>
+          </div>
+          <div class="callout__texte">
+            <h4>Aucune des fourmis d'aujourd'hui n'était là</h4>
+            <p>
+              Une ouvrière vit trois ans, une colonie en vit trente. Le corps qui creuse,
+              défend et nourrit aujourd'hui n'a plus une seule des cellules qui le
+              composaient il y a dix ans. C'est pourtant la même colonie, au même endroit,
+              avec les mêmes galeries et la même odeur.
+            </p>
+          </div>
+        </div>
 
         <div class="sources">
           <h4>Sources et pistes</h4>
@@ -418,6 +419,6 @@
   </div>
 </footer>
 
-<script src="js/main.js?v=40"></script>
+<script src="js/main.js?v=43"></script>
 </body>
 </html>

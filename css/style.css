@@ -1598,16 +1598,22 @@ p { margin: 0; }
    Pour atteindre le bord, il faut donc retrancher la moitié de l'écart entre
    les deux, et non `50% - 50vw`.
 */
+/*
+   La simulation reste dans la colonne de lecture. Elle occupait auparavant
+   toute la largeur de la fenêtre : à 1280 px dans une colonne de 640, elle
+   débordait de 320 px de chaque côté et venait passer sous le sommaire
+   latéral. Alignée sur le texte, elle ne recouvre plus rien et ses bords
+   tombent sur ceux des paragraphes, comme le reste de l'article.
+*/
 .prose figure.stig {
-  margin: 56px calc(-1 * (100vw - 100%) / 2) 0;
-  width: 100vw;
-  max-width: 100vw;
-  padding: 0 24px;
+  margin: 56px 0 0;
+  width: 100%;
+  max-width: none;
+  padding: 0;
 }
 
 .stig__frame {
-  max-width: 1000px;
-  margin: 0 auto;
+  margin: 0;
   border-radius: var(--radius-card);
   overflow: hidden;
   background: #14160f;
@@ -1670,7 +1676,7 @@ p { margin: 0; }
 }
 
 @media (max-width: 720px) {
-  .stig { margin-top: 40px; padding: 0 16px; }
+  .stig { margin-top: 40px; }
   .stig__bar { flex-direction: column; align-items: flex-start; }
   .stig figcaption { margin-top: 18px; }
 }
@@ -1796,271 +1802,83 @@ p { margin: 0; }
   .demo__mesures { grid-template-columns: 1fr; gap: 14px; }
 }
 
-/* ---------- Le cycle du champignon ---------- */
+/* ---------- Encadrés à texture ---------- */
 
 /*
-   La roue à gauche, les étapes à droite, l'une commentant l'autre. Sur écran
-   étroit la roue passe au-dessus : à moins de deux colonnes, la liste devient
-   illisible avant la roue.
+   Trois sections portent une texture derrière leur encadré : la spirale dans
+   « la guerre », le renouvellement dans « le superorganisme », la remontée
+   dans « l'acacia ». Aucune n'est interactive et aucune n'explique quoi que
+   ce soit à la place du texte : chacune répète en forme ce que le paragraphe
+   dit en mots, et se remarque au deuxième regard.
+
+   Le motif commun est ici. Chaque texture n'ajoute ensuite que sa géométrie.
 */
-.cycle {
-  display: grid;
-  grid-template-columns: 236px 1fr;
-  gap: 30px;
+.callout--texture {
+  position: relative;
+  overflow: hidden;
+  display: flex;
   align-items: center;
 }
 
-.cycle__roue { width: 100%; height: auto; display: block; }
-
-.cycle__noeud,
-.cycle__fleche { transition: all 300ms var(--ease-out); }
-
-/* L'étape en cours, sur la roue comme dans la liste. */
-.cycle__noeud[data-actif='true'] {
-  fill: var(--lime-deep);
-  stroke: var(--ink);
-}
-
-.cycle__fleche[data-actif='true'] { stroke: var(--ink); }
+/* Le texte repasse au-dessus de la texture. */
+.callout--texture .callout__texte { position: relative; z-index: 1; }
 
 /*
-   La flèche de bouclage, celle qui ramène à la pâte. C'est le seul trait que
-   l'on souligne en permanence : c'est lui qui fait du schéma un cycle plutôt
-   qu'une liste, et c'est tout le propos de la section.
+   Texte assombri dans ces encadrés seulement. Le corps passe par-dessus les
+   points : mesuré sur le pire cas, un point plein derrière une lettre, le
+   gris courant tombait sous le seuil de contraste et plafonnait la texture à
+   0,24 d'opacité — autant dire invisible.
 */
-.cycle__fleche[data-rang='4'] {
-  stroke: var(--lime-deep);
-  stroke-dasharray: 5 4;
-}
+.callout--texture .callout__texte p { color: var(--ink); }
 
-.cycle__liste {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: grid;
-  gap: 2px;
-  counter-reset: cycle;
-}
-
-.cycle__etape {
-  display: grid;
-  gap: 2px;
-  padding: 9px 12px;
-  border-radius: 10px;
-  border-left: 2px solid transparent;
-  transition: background-color 300ms ease, border-color 300ms ease;
-}
-
-.cycle__etape[data-actif='true'] {
-  background: var(--white);
-  border-left-color: var(--lime-deep);
+.callout--texture > [aria-hidden] {
+  position: absolute;
+  z-index: 0;
+  pointer-events: none;
+  color: var(--lime-deep);
 }
 
 /*
-   Les numéros font le lien entre la roue et la liste : sans eux, on ne sait
-   pas quel point correspond à quelle étape tant qu'on n'a pas lancé le
-   parcours. La numérotation est justifiée ici parce que le contenu est
-   réellement une séquence ordonnée, et non trois cases décorées.
+   Toutes les textures s'arrêtent hors écran et en mouvement réduit. Une
+   boucle infinie qui tourne pendant toute la visite pour n'être vue que
+   quelques secondes fait travailler le compositeur pour rien.
 */
-.cycle__chiffre {
-  font-family: var(--font-body);
-  font-size: 12px;
-  font-weight: 700;
-  fill: var(--stone);
-  text-anchor: middle;
-  transition: fill 300ms var(--ease-out);
+.callout--texture [class$='__svg'] * { animation-play-state: paused; }
+.callout--texture[data-visible='true'] [class$='__svg'] * { animation-play-state: running; }
+
+@media (prefers-reduced-motion: reduce) {
+  .callout--texture [class$='__svg'] * { animation: none !important; opacity: 1; }
 }
-
-.cycle__chiffre[data-actif='true'] { fill: var(--ink); }
-
-.cycle__etape { counter-increment: cycle; position: relative; }
-
-.cycle__nom {
-  font-size: var(--text-body-sm);
-  font-weight: 700;
-  color: var(--ink);
-}
-
-.cycle__nom::before {
-  content: counter(cycle) '. ';
-  color: var(--stone);
-  font-variant-numeric: tabular-nums;
-}
-
-.cycle__quoi {
-  font-size: var(--text-caption);
-  line-height: 1.45;
-  color: var(--stone);
-}
-
-.demo--cycle[data-boucle='true'] .demo__note { color: var(--ink); }
 
 @media (max-width: 620px) {
-  .cycle { grid-template-columns: 1fr; gap: 22px; }
-  .cycle__roue { max-width: 200px; margin: 0 auto; }
+  .callout--texture { display: block; }
+  .callout--texture > [aria-hidden] { display: none; }
 }
 
 /*
-   Mouvement réduit : les étapes se succèdent sans transition de couleur, et
-   le parcours reste piloté par le bouton, jamais lancé tout seul.
+   Hauteur réservée à la texture, uniquement là où elle s'affiche. Déclarées
+   plus bas, ces valeurs passaient après la requête mobile et s'appliquaient
+   donc aussi sur petit écran, où la texture est pourtant retirée.
 */
-@media (prefers-reduced-motion: reduce) {
-  .cycle__noeud, .cycle__fleche, .cycle__etape { transition: none; }
-}
-
-/* ---------- La cascade trophique ---------- */
-
-.cascade__bouton {
-  justify-self: start;
-  border: 1px solid var(--ink);
-  border-radius: var(--radius-pill);
-  background: transparent;
-  color: var(--ink);
-  font-family: var(--font-body);
-  font-size: var(--text-body-sm);
-  font-weight: 600;
-  line-height: 1;
-  padding: 13px 22px;
-  cursor: pointer;
-  transition: background-color var(--dur-hover) ease, color var(--dur-hover) ease,
-              transform var(--dur-press) var(--ease-out);
-}
-.cascade__bouton:active { transform: scale(0.97); }
-@media (hover: hover) and (pointer: fine) {
-  .cascade__bouton:hover { background: var(--ink); color: var(--white); }
-}
-.cascade__bouton[aria-pressed='true'] { background: var(--ink); color: var(--white); }
-
-.cascade {
-  list-style: none;
-  margin: 26px 0 0;
-  padding: 0;
-  display: grid;
-  gap: 1px;
-  background: var(--ash);
-  border-radius: var(--radius-card);
-  overflow: hidden;
-}
-
-.cascade__maillon {
-  display: grid;
-  grid-template-columns: 1fr auto;
-  align-items: baseline;
-  gap: 4px 20px;
-  padding: 16px 18px;
-  background: var(--warm-mist);
-}
-
-.cascade__nom { font-size: var(--text-body); font-weight: 700; color: var(--ink); }
-
-.cascade__quoi {
-  grid-column: 1;
-  font-size: var(--text-caption);
-  color: var(--stone);
-}
-
-/*
-   Les deux états occupent la même case de la grille : ils se remplacent sans
-   que la ligne change de largeur, sinon la bascule ferait sauter la colonne.
-*/
-.cascade__etat {
-  grid-column: 2;
-  grid-row: 1 / span 2;
-  display: grid;
-  align-items: center;
-  font-size: var(--text-body-sm);
-  font-weight: 600;
-  text-align: right;
-}
-
-.cascade__avec,
-.cascade__sans {
-  grid-area: 1 / 1;
-  transition: opacity 260ms var(--ease-out), transform 260ms var(--ease-out);
-}
-
-.cascade__avec { color: var(--ink); }
-.cascade__sans { color: #9a4a2f; opacity: 0; transform: translateY(6px); }
-
-.demo--cascade[data-sans='true'] .cascade__avec { opacity: 0; transform: translateY(-6px); }
-.demo--cascade[data-sans='true'] .cascade__sans { opacity: 1; transform: none; }
-
-/* Le maillon qui vient de basculer se signale brièvement. */
-.cascade__maillon[data-actif='true'] { background: var(--white); }
-.cascade__maillon { transition: background-color 320ms ease; }
-
-/*
-   Mouvement réduit : les états se remplacent sans glisser, et la cascade
-   devient immédiate. Elle garde son sens, on perd seulement la propagation.
-*/
-@media (prefers-reduced-motion: reduce) {
-  .cascade__avec, .cascade__sans { transform: none !important; }
+@media (min-width: 621px) {
+  .callout--spirale  { min-height: 268px; }
+  .callout--renouv   { min-height: 232px; }
+  .callout--remontee { min-height: 210px; }
 }
 
 /* ---------- La spirale de la mort ---------- */
 
 /*
-   Le seul cercle du site, et la seule animation qui ne s'arrête jamais.
-
-   Les deux exceptions vont ensemble : le sujet de cette section est une
-   boucle dont les fourmis ne sortent pas. Le cercle tourne derrière le
-   paragraphe qui l'explique plutôt qu'à côté — la texture et le texte
-   disent la même chose, au même endroit.
-
-   Une file régulière aurait paru immobile en tournant : ce sont les écarts
-   irréguliers, de 5,7° à 22,7°, qui rendent la rotation lisible. Une
-   révolution dure 54 s, assez lent pour qu'on ne le remarque pas tout de
-   suite, ce qui est le but.
+   Le seul cercle du site. Une file régulière aurait paru immobile en
+   tournant : ce sont les écarts irréguliers, de 5,7° à 22,7°, qui rendent la
+   rotation lisible. Une révolution dure 54 s, assez lent pour qu'on ne le
+   remarque pas tout de suite, ce qui est le but.
 */
-/*
-   Hauteur minimale calée sur le diamètre du cercle : coupé par un bord, il ne
-   montrait qu'un arc, alors que c'est précisément le fait d'être fermé qui
-   porte le sens. Une boucle ouverte, on en sort.
-
-   Le texte occupe toute la largeur et passe au-dessus du cercle. C'est ce qui
-   oblige à assombrir sa couleur — voir la note sur l'opacité plus bas.
-*/
-.callout--spirale {
-  position: relative;
-  overflow: hidden;
-  min-height: 268px;
-  display: flex;
-  align-items: center;
-}
-
-/* Plus de colonne réduite : le texte occupe toute la case. */
-.callout--spirale .callout__texte { max-width: none; }
-
-/*
-   Texte assombri, uniquement dans cet encadré. C'est ce qui rend le cercle
-   visible sans descendre sous le seuil de contraste, et c'est défendable en
-   soi : un encadré est un bloc de mise en avant, son texte peut être plus
-   appuyé que le corps courant.
-*/
-.callout--spirale .callout__texte p { color: var(--ink); }
-
-@media (max-width: 620px) {
-  .callout--spirale { min-height: 0; display: block; }
-}
-
 .spirale {
-  position: absolute;
   top: 50%;
   right: 30px;
   transform: translateY(-50%);
   width: 232px;
-  z-index: 0;
-  pointer-events: none;
-
-  /*
-     Le texte passe désormais par-dessus les points, ce qui fait du contraste
-     la contrainte qui décide de tout. Mesuré sur le pire cas, un point à
-     pleine opacité derrière une lettre : le gris du corps de texte tombait à
-     3,35:1, sous le seuil, ce qui plafonnait le cercle à 0,24 d'opacité —
-     autant dire invisible. En passant le texte de l'encadré à `--ink`, le
-     même pire cas donne 8,07:1, et le cercle peut enfin se voir.
-  */
-  color: var(--lime-deep);
   opacity: 0.72;
 }
 
@@ -2069,40 +1887,62 @@ p { margin: 0; }
 .spirale__file {
   transform-origin: 50% 50%;
   animation: spirale-tourne 54s linear infinite;
-
-  /*
-     En pause par défaut : l'observateur ne la lance qu'une fois le bloc à
-     l'écran. Une boucle infinie qui tourne pendant toute la visite pour
-     n'être vue que quelques secondes, c'est le reproche fait au chevron
-     du hero — il n'y a pas de raison de le refaire ici.
-  */
-  animation-play-state: paused;
 }
-
-.callout--spirale[data-visible='true'] .spirale__file { animation-play-state: running; }
 
 @keyframes spirale-tourne {
   to { transform: rotate(360deg); }
 }
 
-/* Le texte repasse au-dessus de la texture. */
-.callout__texte { position: relative; z-index: 1; }
+/* ---------- Le renouvellement ---------- */
 
 /*
-   Sous cette largeur, le cercle occuperait la place du texte au lieu de
-   l'accompagner : il sort de la mise en page.
+   Les points s'effacent et reviennent, chacun sur son propre décalage. La
+   densité du champ ne bouge jamais, et pourtant aucun point ne dure : c'est
+   ce que la section dit d'un corps dont toutes les cellules sont remplacées.
 */
-@media (max-width: 620px) {
-  .spirale { display: none; }
+.renouv {
+  top: 50%;
+  right: 24px;
+  transform: translateY(-50%);
+  width: 230px;
+  opacity: 0.6;
 }
 
+.renouv__svg { width: 100%; height: auto; display: block; }
+
+.renouv__champ circle { animation: renouv-cycle 7.2s ease-in-out infinite; }
+
+@keyframes renouv-cycle {
+  0%, 34%   { opacity: 1; }
+  46%, 54%  { opacity: 0; }
+  66%, 100% { opacity: 1; }
+}
+
+/* ---------- La remontée ---------- */
+
 /*
-   Mouvement réduit : la file s'arrête. Elle garde tout son sens — un cercle
-   fermé se lit sans avoir besoin de tourner — et une rotation continue est
-   exactement ce qui déclenche une gêne vestibulaire.
+   Une onde parcourt la chaîne du bas vers le haut, en boucle. Les décalages
+   sont posés maillon par maillon dans le balisage, du plus haut au plus bas,
+   pour que la vague monte et ne descende jamais — le sens est le propos.
 */
-@media (prefers-reduced-motion: reduce) {
-  .spirale__file { animation: none; }
+.remontee {
+  top: 50%;
+  right: 34px;
+  transform: translateY(-50%);
+  width: 58px;
+  opacity: 0.75;
+}
+
+.remontee__svg { width: 100%; height: auto; display: block; }
+
+.remontee__maillons circle {
+  transform-origin: center;
+  animation: remontee-onde 3.6s ease-in-out infinite;
+}
+
+@keyframes remontee-onde {
+  0%, 55%, 100% { opacity: 0.32; r: 4; }
+  22%           { opacity: 1;    r: 5.6; }
 }
 
 /* ---------- Mouvement ---------- */

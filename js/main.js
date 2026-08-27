@@ -250,160 +250,26 @@
   }
 
   /* ---------------------------------------------------------
-     1 ter. Spirale de la mort
+     1 ter. Textures des encadrés
 
-     La file ne tourne que lorsqu'elle est à l'écran. Une animation infinie
-     qui tourne pendant toute la visite pour n'être regardée que quelques
-     secondes fait travailler le compositeur pour rien.
+     Trois sections portent une texture animée derrière leur encadré. Aucune
+     ne tourne tant qu'elle n'est pas à l'écran : une boucle infinie qui
+     s'exécute pendant toute la visite pour n'être vue que quelques secondes
+     fait travailler le compositeur pour rien.
      --------------------------------------------------------- */
 
-  var spirale = document.querySelector('.callout--spirale');
+  var textures = document.querySelectorAll('.callout--texture');
 
-  if (spirale && 'IntersectionObserver' in window) {
-    new IntersectionObserver(function (entrees) {
+  if (textures.length && 'IntersectionObserver' in window) {
+    var oeil = new IntersectionObserver(function (entrees) {
       entrees.forEach(function (e) {
-        spirale.dataset.visible = e.isIntersecting ? 'true' : 'false';
+        e.target.dataset.visible = e.isIntersecting ? 'true' : 'false';
       });
-    }, { threshold: 0.15 }).observe(spirale);
-  } else if (spirale) {
+    }, { threshold: 0.15 });
+    Array.prototype.forEach.call(textures, function (t) { oeil.observe(t); });
+  } else {
     /* Sans observateur, on laisse tourner : mieux vaut l'effet que rien. */
-    spirale.dataset.visible = 'true';
-  }
-
-  /* ---------------------------------------------------------
-     1 quater. Le cycle du champignon  (superorganisme.html)
-
-     La section décrit une boucle, et une boucle est ce qu'un paragraphe
-     raconte le plus mal : il faut arriver à la fin pour comprendre que ça
-     revient au début.
-
-     Le parcours ne s'arrête donc pas à la cinquième étape, il repart à la
-     deuxième — pas à la première, parce qu'aucune nouvelle feuille n'est
-     nécessaire pour que le cycle continue. C'est exactement ce que le
-     schéma doit faire comprendre.
-     --------------------------------------------------------- */
-
-  var demoCycle = document.querySelector('.demo--cycle');
-
-  if (demoCycle) {
-    var noeuds = demoCycle.querySelectorAll('.cycle__noeud');
-    var flechesC = demoCycle.querySelectorAll('.cycle__fleche');
-    var etapes = demoCycle.querySelectorAll('.cycle__etape');
-    var btnCycle = demoCycle.querySelector('#cycleBouton');
-    var noteCycle = demoCycle.querySelector('#cycleNote');
-
-    var RETOUR = 1;      /* la boucle repart à la pâte, pas à la feuille */
-    var CADENCE_C = 1500;
-    var doucC = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-    var rang = -1, tours = 0, minuterieC = null, tourne = false;
-
-    var peindre = function () {
-      Array.prototype.forEach.call(noeuds, function (n, i) {
-        n.dataset.actif = (i === rang) ? 'true' : 'false';
-      });
-      Array.prototype.forEach.call(etapes, function (e, i) {
-        e.dataset.actif = (i === rang) ? 'true' : 'false';
-      });
-      Array.prototype.forEach.call(demoCycle.querySelectorAll('.cycle__chiffre'), function (c, i) {
-        c.dataset.actif = (i === rang) ? 'true' : 'false';
-      });
-      /* La flèche allumée est celle qui part de l'étape en cours. */
-      Array.prototype.forEach.call(flechesC, function (f, i) {
-        f.dataset.actif = (i === rang) ? 'true' : 'false';
-      });
-    };
-
-    var avancer = function () {
-      var dernier = noeuds.length - 1;
-      if (rang === dernier) { rang = RETOUR; tours++; }
-      else if (rang < 0) { rang = 0; }
-      else { rang++; }
-
-      peindre();
-
-      if (tours >= 1) {
-        demoCycle.dataset.boucle = 'true';
-        noteCycle.textContent =
-          'Le circuit vient de se refermer : les enzymes sont retombées sur la pâte, sans ' +
-          'qu\'une nouvelle feuille soit nécessaire. En se nourrissant, l\'ouvrière ensemence ' +
-          'son propre compost des outils qui vont le décomposer — et elle n\'en sait rien.';
-      }
-
-      minuterieC = setTimeout(avancer, doucC ? 2600 : CADENCE_C);
-    };
-
-    var arreter = function () {
-      clearTimeout(minuterieC);
-      tourne = false;
-      btnCycle.setAttribute('aria-pressed', 'false');
-      btnCycle.textContent = 'Suivre une feuille';
-    };
-
-    btnCycle.addEventListener('click', function () {
-      if (tourne) { arreter(); return; }
-      tourne = true;
-      rang = -1; tours = 0;
-      demoCycle.dataset.boucle = 'false';
-      btnCycle.setAttribute('aria-pressed', 'true');
-      btnCycle.textContent = 'Arrêter';
-      noteCycle.textContent =
-        'Cinq étapes, et la cinquième ramène à la deuxième. Aucune fourmi ne connaît ' +
-        'ce circuit : elle coupe, elle mâche, elle mange.';
-      avancer();
-    });
-
-    /* Un parcours qui tourne hors écran ne sert personne. */
-    if ('IntersectionObserver' in window) {
-      new IntersectionObserver(function (es) {
-        es.forEach(function (e) { if (!e.isIntersecting && tourne) arreter(); });
-      }, { threshold: 0.1 }).observe(demoCycle);
-    }
-  }
-
-  /* ---------------------------------------------------------
-     1 quinquies. La cascade trophique  (acacia.html)
-
-     La thèse de l'article est que l'effet remonte la chaîne. Le décalage
-     entre les maillons est donc le sujet, pas un ornement : c'est lui qui
-     montre la propagation. Sans lui, on ne verrait qu'un avant et un après.
-     --------------------------------------------------------- */
-
-  var demoCascade = document.querySelector('.demo--cascade');
-
-  if (demoCascade) {
-    var bouton = demoCascade.querySelector('#cascadeBouton');
-    var maillons = demoCascade.querySelectorAll('.cascade__maillon');
-    var minuteries = [];
-    var doux = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    var DELAI = doux ? 0 : 380;
-
-    var basculer = function (sans) {
-      minuteries.forEach(clearTimeout);
-      minuteries = [];
-      demoCascade.dataset.sans = sans ? 'true' : 'false';
-      bouton.setAttribute('aria-pressed', sans ? 'true' : 'false');
-      bouton.innerHTML = sans
-        ? 'Rétablir <em>Crematogaster</em>'
-        : 'Retirer <em>Crematogaster</em>';
-
-      Array.prototype.forEach.call(maillons, function (m, i) {
-        /*
-           À l'aller, la perturbation part du bas de la chaîne. Au retour,
-           elle repart aussi du bas : c'est la fourmi qui revient, et le
-           couvert met le même temps à se reconstituer.
-        */
-        m.dataset.actif = 'false';
-        minuteries.push(setTimeout(function () {
-          m.dataset.actif = 'true';
-          minuteries.push(setTimeout(function () { m.dataset.actif = 'false'; }, 520));
-        }, i * DELAI));
-      });
-    };
-
-    bouton.addEventListener('click', function () {
-      basculer(demoCascade.dataset.sans !== 'true');
-    });
+    Array.prototype.forEach.call(textures, function (t) { t.dataset.visible = 'true'; });
   }
 
   /* ---------------------------------------------------------
