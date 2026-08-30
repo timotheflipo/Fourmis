@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=43">
+<link rel="stylesheet" href="css/style.css?v=45">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%23333'/><circle cx='50' cy='30' r='11' fill='%23d7eb80'/><circle cx='50' cy='52' r='9' fill='%23d7eb80'/><circle cx='50' cy='74' r='13' fill='%23d7eb80'/></svg>">
 </head>
 <body>
@@ -52,15 +52,21 @@
         parviennent malgré tout à construire, décider et défendre.
       </p>
 
-      <div class="search">
-        <div class="search__field">
-          <svg class="search__icon" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
-          <label class="visually-hidden" for="q">Rechercher dans la base</label>
-          <input class="search__input" id="q" type="search" autocomplete="off"
-                 placeholder="Rechercher : stigmergie, acacia, légionnaires…">
-          <span class="search__hint">Entrée</span>
-        </div>
-        <div class="search__results" id="results" role="listbox" aria-label="Résultats"></div>
+      <!--
+        La piste. Le site explique que les fourmis ne se donnent pas d'ordres :
+        elles réagissent aux traces laissées par les précédentes. Ici, c'est le
+        lecteur qui laisse la trace. Il ne commande rien, il passe — et la
+        colonie suit. C'est la définition exacte de la stigmergie, appliquée à
+        celui qui vient la lire.
+
+        Le canevas n'a pas de contenu textuel : `aria-hidden`, et l'indication
+        sous la piste dit ce qu'il faut savoir à qui ne le verra pas.
+      -->
+      <div class="piste" id="piste">
+        <canvas class="piste__toile" id="pisteToile" aria-hidden="true"></canvas>
+        <p class="piste__indice" id="pisteIndice">
+          Passez le curseur ici : elles suivront votre trace.
+        </p>
       </div>
     </div>
 
@@ -206,8 +212,8 @@
       -->
       <figure class="figure-compare">
         <div class="compare" id="compare">
-          <img src="images/photos/savane-avant.jpg?v=43" alt="Savane densément peuplée de jeunes acacias">
-          <img class="compare__after" src="images/photos/savane-apres.jpg?v=43" alt="Même savane, presque entièrement dépourvue d'acacias">
+          <img src="images/photos/savane-avant.jpg?v=45" alt="Savane densément peuplée de jeunes acacias">
+          <img class="compare__after" src="images/photos/savane-apres.jpg?v=45" alt="Même savane, presque entièrement dépourvue d'acacias">
           <span class="compare__tag compare__tag--before">Avec Crematogaster</span>
           <span class="compare__tag compare__tag--after">Après l'invasion</span>
           <div class="compare__handle">
@@ -477,6 +483,6 @@
   </div>
 </footer>
 
-<script src="js/main.js?v=43"></script>
+<script src="js/main.js?v=45"></script>
 </body>
 </html>

@@ -404,80 +404,221 @@
   }
 
   /* ---------------------------------------------------------
-     4. Recherche dans la base
+     4. La piste
+
+     Le site explique que les fourmis ne se donnent pas d'ordres : elles
+     réagissent aux traces laissées par les précédentes. Ici, c'est le lecteur
+     qui laisse la trace.
+
+     Trois règles, celles du modèle de Deneubourg que l'article « intelligence »
+     décrit déjà, et rien d'autre :
+       1. ce qui passe dépose de la phéromone ;
+       2. la phéromone s'évapore ;
+       3. une fourmi tourne vers la concentration la plus forte devant elle.
+
+     Aucune fourmi ne connaît la position du curseur. Elle ne lit que la grille
+     sous ses pattes, dans un cône de trois capteurs. C'est pour ça que la piste
+     met un instant à se former, et c'est ce délai qui rend le mécanisme
+     visible : si elles suivaient le curseur, ce serait une poursuite, pas une
+     stigmergie.
      --------------------------------------------------------- */
 
-  var INDEX = [
-    { t: 'L\'acacia siffleur', d: 'Crematogaster mimosae perce les galles épineuses pour faire siffler l\'arbre et éloigner les éléphants.', u: 'acacia.html' },
-    { t: 'La fourmi à grosse tête', d: 'Espèce invasive qui tue Crematogaster, ne défend pas l\'arbre, et fait s\'ouvrir la savane.', u: 'acacia.html#invasion' },
-    { t: 'Les lions et le couvert végétal', d: 'Moins d\'acacias, moins de cachettes : le succès de chasse des lions s\'effondre.', u: 'acacia.html#lions' },
-    { t: 'Le superorganisme', d: 'La colonie comme un corps unique dont les fourmis sont les cellules. Hölldobler et Wilson, 2008.', u: 'superorganisme.html' },
-    { t: 'Les castes', d: 'Reine, ouvrière, soldat, mâle : l\'espérance de vie découle de la fonction.', u: 'superorganisme.html#castes' },
-    { t: 'L\'immunité sociale', d: 'Hygiène collective, soins ciblés et vaccination sociale à l\'échelle de la colonie.', u: 'superorganisme.html#immunite' },
-    { t: 'Les ponts vivants', d: 'Les légionnaires Eciton assemblent des ponts avec leurs corps, ajustés à la taille du vide.', u: 'superorganisme.html#ponts' },
-    { t: 'L\'agriculture des coupe-feuille', d: 'Atta cultive un champignon depuis 50 millions d\'années, protégé par des bactéries antibiotiques.', u: 'superorganisme.html#agriculture' },
-    { t: 'La thermorégulation du nid', d: 'Une architecture ventilée que personne n\'a conçue, issue de règles individuelles simples.', u: 'superorganisme.html#thermo' },
-    { t: 'La stigmergie', d: 'Coordination par traces laissées dans l\'environnement, sans communication directe. Grassé, 1959.', u: 'intelligence.html#stigmergie' },
-    { t: 'Le quorum sensing', d: 'Choix collectif d\'un nid chez Temnothorax : tandem runs puis transport de masse.', u: 'intelligence.html#quorum' },
-    { t: 'Les seuils de réponse', d: 'La répartition du travail sans chef : chaque fourmi a son propre seuil de déclenchement.', u: 'intelligence.html#seuils' },
-    { t: 'Les phéromones et l\'odeur de colonie', d: 'Hydrocarbures cutanés, modèle Gestalt, identité chimique distribuée.', u: 'intelligence.html#pheromones' },
-    { t: 'Le plus court chemin', d: 'L\'expérience du double pont de Deneubourg et l\'algorithme Ant Colony Optimization.', u: 'intelligence.html#chemin' },
-    { t: 'Le cerveau sans cerveau', d: 'Deborah Gordon : une colonie traite l\'information comme un réseau de neurones, sans contrôle central.', u: 'intelligence.html#cerveau' },
-    { t: 'Les fourmis légionnaires', d: 'Environ 200 espèces nomades, colonnes de 100 m, jusqu\'à 500 000 proies par jour.', u: 'guerre.html#legionnaires' },
-    { t: 'Les super-colonies', d: 'La fourmi d\'Argentine forme en Europe une colonie unique de milliers de kilomètres.', u: 'guerre.html#supercolonies' },
-    { t: 'La spirale de la mort', d: 'Coupées de la piste, les fourmis tournent en cercle jusqu\'à mourir d\'épuisement.', u: 'guerre.html#spirale' },
-    { t: 'Les bunkers vivants', d: 'Des ouvrières à tête carrée bouchent physiquement l\'entrée du nid face aux légionnaires.', u: 'guerre.html#defenses' },
-    { t: 'Nomamyrmex esenbeckii', d: 'La seule espèce capable d\'attaquer avec succès une colonie mature de coupe-feuille.', u: 'guerre.html#bataille' },
-    { t: 'La biomasse des fourmis', d: '12,3 mégatonnes de carbone sec, soit environ 20 % de la biomasse humaine. Schultheiss et al., 2022.', u: 'index.html#entrees' }
-  ];
+  var piste = document.getElementById('piste');
+  var toile = document.getElementById('pisteToile');
 
-  var input = document.getElementById('q');
-  var results = document.getElementById('results');
+  if (piste && toile && toile.getContext) {
+    var ctx = toile.getContext('2d');
+    var doucP = window.matchMedia('(prefers-reduced-motion: reduce)');
 
-  if (input && results) {
-    var norm = function (s) {
-      return s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+    var CELL = 5;          /* côté d'une cellule de la grille, en pixels CSS */
+    var EVAPORATION = 0.972;
+    var DEPOT_CURSEUR = 46;
+    var DEPOT_FOURMI = 5;
+    var MAX = 120;
+    var NB_FOURMIS = 16;
+    var VITESSE = 0.62;
+    var PORTEE_CAPTEUR = 11;   /* distance à laquelle la fourmi « sent » */
+    var OUVERTURE = 0.7;       /* écart angulaire des capteurs latéraux */
+
+    var L = 0, H = 0, cols = 0, lignes = 0, grille = null, fourmis = [], dpr = 1;
+    var boucle = null, visible = false;
+
+    var dimensionner = function () {
+      var r = toile.getBoundingClientRect();
+      if (!r.width) return false;
+      dpr = Math.min(window.devicePixelRatio || 1, 2);
+      L = Math.round(r.width); H = Math.round(r.height);
+      toile.width = Math.round(L * dpr);
+      toile.height = Math.round(H * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+      cols = Math.ceil(L / CELL); lignes = Math.ceil(H / CELL);
+      grille = new Float32Array(cols * lignes);
+
+      fourmis = [];
+      for (var i = 0; i < NB_FOURMIS; i++) {
+        fourmis.push({
+          x: Math.random() * L,
+          y: Math.random() * H,
+          a: Math.random() * Math.PI * 2
+        });
+      }
+      return true;
     };
 
-    var render = function () {
-      var q = norm(input.value.trim());
-      if (q.length < 2) { results.dataset.open = 'false'; return; }
+    var lire = function (x, y) {
+      if (x < 0 || y < 0 || x >= L || y >= H) return -1;   /* hors cadre : répulsif */
+      return grille[((y / CELL) | 0) * cols + ((x / CELL) | 0)] || 0;
+    };
 
-      var hits = INDEX.filter(function (e) {
-        return norm(e.t).indexOf(q) > -1 || norm(e.d).indexOf(q) > -1;
-      }).slice(0, 6);
+    var deposer = function (x, y, quantite) {
+      var c = (x / CELL) | 0, l = (y / CELL) | 0;
+      for (var dl = -1; dl <= 1; dl++) {
+        for (var dc = -1; dc <= 1; dc++) {
+          var cc = c + dc, ll = l + dl;
+          if (cc < 0 || ll < 0 || cc >= cols || ll >= lignes) continue;
+          var part = (dc === 0 && dl === 0) ? 1 : 0.42;
+          var i = ll * cols + cc;
+          grille[i] = Math.min(MAX, grille[i] + quantite * part);
+        }
+      }
+    };
 
-      if (!hits.length) {
-        results.innerHTML = '<p class="search__empty">Aucun résultat pour « ' +
-          input.value.trim().replace(/[<>&]/g, '') + ' ».</p>';
+    /* ---- Le lecteur dépose, sans le savoir ---- */
+
+    var surPointeur = function (e) {
+      var r = toile.getBoundingClientRect();
+      deposer(e.clientX - r.left, e.clientY - r.top, DEPOT_CURSEUR);
+      if (piste.dataset.touche !== 'true') piste.dataset.touche = 'true';
+    };
+
+    toile.addEventListener('pointermove', surPointeur);
+    toile.addEventListener('pointerdown', surPointeur);
+
+    /* ---- Une image ---- */
+
+    var pas = function () {
+      var i, f;
+
+      for (i = 0; i < grille.length; i++) grille[i] *= EVAPORATION;
+
+      for (i = 0; i < fourmis.length; i++) {
+        f = fourmis[i];
+
+        /* Trois capteurs : devant, à gauche, à droite. Rien d'autre. */
+        var d = lire(f.x + Math.cos(f.a) * PORTEE_CAPTEUR, f.y + Math.sin(f.a) * PORTEE_CAPTEUR);
+        var g = lire(f.x + Math.cos(f.a - OUVERTURE) * PORTEE_CAPTEUR, f.y + Math.sin(f.a - OUVERTURE) * PORTEE_CAPTEUR);
+        var dr = lire(f.x + Math.cos(f.a + OUVERTURE) * PORTEE_CAPTEUR, f.y + Math.sin(f.a + OUVERTURE) * PORTEE_CAPTEUR);
+
+        if (g > d && g >= dr) f.a -= 0.34;
+        else if (dr > d && dr > g) f.a += 0.34;
+        else if (d <= 0.02 && g <= 0.02 && dr <= 0.02) f.a += (Math.random() - 0.5) * 0.7;
+        f.a += (Math.random() - 0.5) * 0.16;
+
+        f.x += Math.cos(f.a) * VITESSE;
+        f.y += Math.sin(f.a) * VITESSE;
+
+        /* Le cadre est un mur : elle rebrousse au lieu de sortir. */
+        if (f.x < 2) { f.x = 2; f.a = Math.PI - f.a; }
+        if (f.x > L - 2) { f.x = L - 2; f.a = Math.PI - f.a; }
+        if (f.y < 2) { f.y = 2; f.a = -f.a; }
+        if (f.y > H - 2) { f.y = H - 2; f.a = -f.a; }
+
+        deposer(f.x, f.y, DEPOT_FOURMI);
+      }
+    };
+
+    var peindre = function () {
+      ctx.clearRect(0, 0, L, H);
+
+      /* La piste : seules les cellules qui portent quelque chose sont tracées. */
+      ctx.fillStyle = '#d7eb80';
+      for (var l = 0; l < lignes; l++) {
+        for (var c = 0; c < cols; c++) {
+          var v = grille[l * cols + c];
+          if (v < 1.4) continue;
+          ctx.globalAlpha = Math.min(0.5, v / MAX * 0.85);
+          ctx.fillRect(c * CELL, l * CELL, CELL, CELL);
+        }
+      }
+
+      /* Les fourmis, par-dessus. */
+      ctx.globalAlpha = 1;
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.92)';
+      for (var i = 0; i < fourmis.length; i++) {
+        ctx.beginPath();
+        ctx.arc(fourmis[i].x, fourmis[i].y, 1.7, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    };
+
+    var image = function () {
+      pas();
+      peindre();
+      boucle = window.requestAnimationFrame(image);
+    };
+
+    var demarrer = function () {
+      if (boucle || doucP.matches) return;
+      boucle = window.requestAnimationFrame(image);
+    };
+    var stopper = function () {
+      if (!boucle) return;
+      window.cancelAnimationFrame(boucle);
+      boucle = null;
+    };
+
+    /*
+       Le canevas n'avait pas encore de largeur quand le script s'exécutait,
+       et le dimensionnement échouait silencieusement. Plutôt que de courir
+       après le bon instant, on écoute la taille : `ResizeObserver` se déclenche
+       dès que l'élément en a une, et à chaque fois qu'elle change ensuite.
+       Plus aucune dépendance à l'ordre de chargement.
+    */
+    var branche = false;
+
+    var brancher = function () {
+      if (branche) return;
+      branche = true;
+      if (doucP.matches) return;
+
+      if ('IntersectionObserver' in window) {
+        new IntersectionObserver(function (es) {
+          es.forEach(function (e) {
+            visible = e.isIntersecting;
+            if (visible) demarrer(); else stopper();
+          });
+        }, { threshold: 0.05 }).observe(piste);
       } else {
-        results.innerHTML = hits.map(function (e) {
-          return '<a class="search__hit" href="' + e.u + '">' +
-                 '<span class="search__hit-title">' + e.t + '</span>' +
-                 '<span class="search__hit-desc">' + e.d + '</span></a>';
-        }).join('');
+        visible = true;
+        demarrer();
       }
-      results.dataset.open = 'true';
+
+      document.addEventListener('visibilitychange', function () {
+        if (document.hidden) stopper(); else if (visible) demarrer();
+      });
     };
 
-    input.addEventListener('input', render);
-    input.addEventListener('focus', render);
+    var surTaille = function () {
+      var r = toile.getBoundingClientRect();
+      if (!r.width) return;
+      /* Rien à refaire tant que la boîte n'a pas réellement changé. */
+      if (Math.round(r.width) === L && Math.round(r.height) === H) return;
 
-    input.addEventListener('keydown', function (e) {
-      if (e.key === 'Enter') {
-        var first = results.querySelector('.search__hit');
-        if (first) { e.preventDefault(); window.location.href = first.href; }
-      }
-      if (e.key === 'Escape') { results.dataset.open = 'false'; input.blur(); }
-      if (e.key === 'ArrowDown') {
-        var f = results.querySelector('.search__hit');
-        if (f) { e.preventDefault(); f.focus(); }
-      }
-    });
+      stopper();
+      if (!dimensionner()) return;
+      brancher();
+      if (doucP.matches) peindre();
+      else if (visible) demarrer();
+    };
 
-    document.addEventListener('click', function (e) {
-      if (!e.target.closest('.search')) results.dataset.open = 'false';
-    });
+    if ('ResizeObserver' in window) {
+      new ResizeObserver(surTaille).observe(toile);
+    } else {
+      window.addEventListener('resize', surTaille);
+      window.addEventListener('load', surTaille);
+    }
+    surTaille();
   }
 
   /* ---------------------------------------------------------
