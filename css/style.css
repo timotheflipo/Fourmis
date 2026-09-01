@@ -533,7 +533,21 @@ p { margin: 0; }
 */
 .trace {
   position: fixed;
-  inset: 0;
+  top: 0;
+  left: 0;
+
+  /*
+     Largeur et hauteur explicites, et non `inset: 0` seul. Un canevas est un
+     élément remplacé : sans dimension CSS, il ne s'étire pas entre ses
+     bords, il prend sa taille intrinsèque — celle de ses attributs
+     `width`/`height`, réglés sur la densité d'écran. Sur un écran à deux
+     pixels par point, le canevas s'affichait donc en 2560x1440 dans une
+     fenêtre de 1280x720, et tout ce qu'il dessinait était décalé d'un
+     facteur deux vers le bas et la droite.
+  */
+  width: 100vw;
+  height: 100vh;
+
   z-index: 30;
   pointer-events: none;
   display: none;
