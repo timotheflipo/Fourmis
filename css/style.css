@@ -522,52 +522,6 @@ p { margin: 0; }
   font-size: var(--text-subheading);
 }
 
-/* La trace du curseur */
-
-/*
-   Couche décorative posée au-dessus de la page. Elle ne capte aucun clic et
-   ne contient aucun texte : ce qu'elle dessine est en trop, jamais en plus.
-
-   Sous l'en-tête (z-index 40) et sous le panneau d'aperçu (90) : la trace
-   accompagne la lecture, elle ne passe pas devant l'interface.
-*/
-.trace {
-  position: fixed;
-  top: 0;
-  left: 0;
-
-  /*
-     Largeur et hauteur explicites, et non `inset: 0` seul. Un canevas est un
-     élément remplacé : sans dimension CSS, il ne s'étire pas entre ses
-     bords, il prend sa taille intrinsèque — celle de ses attributs
-     `width`/`height`, réglés sur la densité d'écran. Sur un écran à deux
-     pixels par point, le canevas s'affichait donc en 2560x1440 dans une
-     fenêtre de 1280x720, et tout ce qu'il dessinait était décalé d'un
-     facteur deux vers le bas et la droite.
-  */
-  width: 100vw;
-  height: 100vh;
-
-  z-index: 30;
-  pointer-events: none;
-  display: none;
-}
-
-/*
-   Uniquement là où il y a un vrai curseur. Sur un écran tactile il n'y a rien
-   à suivre, et le canevas plein écran serait une couche de compositing payée
-   pour rien.
-*/
-@media (hover: hover) and (pointer: fine) {
-  .trace { display: block; }
-}
-
-/* Une traînée qui poursuit le pointeur est exactement ce que le mouvement
-   réduit doit supprimer. */
-@media (prefers-reduced-motion: reduce) {
-  .trace { display: none; }
-}
-
 /* Carte de statistiques flottante */
 
 .stats {
