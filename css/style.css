@@ -522,44 +522,36 @@ p { margin: 0; }
   font-size: var(--text-subheading);
 }
 
-/* La piste */
+/* La trace du curseur */
 
 /*
-   Le lecteur laisse une trace, la colonie la suit. C'est la stigmergie du
-   site appliquée à celui qui vient la lire : il ne commande rien, il passe.
+   Couche décorative posée au-dessus de la page. Elle ne capte aucun clic et
+   ne contient aucun texte : ce qu'elle dessine est en trop, jamais en plus.
 
-   Aucun cadre, aucun fond : ce n'est pas un composant d'interface posé sur
-   la photo, c'est une couche de la photo. La barre de recherche qui occupait
-   cette place venait d'Ecosia et ne disait rien du sujet.
+   Sous l'en-tête (z-index 40) et sous le panneau d'aperçu (90) : la trace
+   accompagne la lecture, elle ne passe pas devant l'interface.
 */
-.piste {
-  position: relative;
-  margin: 34px auto 0;
-  max-width: 620px;
+.trace {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  pointer-events: none;
+  display: none;
 }
 
-.piste__toile {
-  display: block;
-  width: 100%;
-  height: 108px;
-  cursor: crosshair;
-  touch-action: none;
+/*
+   Uniquement là où il y a un vrai curseur. Sur un écran tactile il n'y a rien
+   à suivre, et le canevas plein écran serait une couche de compositing payée
+   pour rien.
+*/
+@media (hover: hover) and (pointer: fine) {
+  .trace { display: block; }
 }
 
-.piste__indice {
-  margin-top: 10px;
-  font-size: var(--text-caption);
-  letter-spacing: 0.04em;
-  color: rgba(255, 255, 255, 0.68);
-  transition: opacity 600ms ease;
-}
-
-/* L'indication n'a plus d'objet dès que le geste est trouvé. */
-.piste[data-touche='true'] .piste__indice { opacity: 0; }
-
-@media (max-width: 720px) {
-  .piste { margin-top: 26px; }
-  .piste__toile { height: 88px; }
+/* Une traînée qui poursuit le pointeur est exactement ce que le mouvement
+   réduit doit supprimer. */
+@media (prefers-reduced-motion: reduce) {
+  .trace { display: none; }
 }
 
 /* Carte de statistiques flottante */
@@ -1924,7 +1916,6 @@ p { margin: 0; }
   .hero__eyebrow,
   .hero h1,
   .hero__lede,
-  .hero .piste,
   .hero .stats,
   .article-hero .eyebrow,
   .article-hero h1,
@@ -1944,8 +1935,8 @@ p { margin: 0; }
   .article-hero h1          { animation-delay: 55ms; }
   .hero__lede,
   .article-hero__lede       { animation-delay: 110ms; }
-  .hero .piste              { animation-delay: 165ms; }
-  .hero .stats              { animation-delay: 220ms; }
+  /* La barre occupait le cran de 165 ms ; la carte remonte pour combler. */
+  .hero .stats              { animation-delay: 165ms; }
 
   @keyframes rise-in {
     from { opacity: 0; transform: translateY(18px); }

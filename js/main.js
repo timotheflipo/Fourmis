@@ -1,6 +1,6 @@
 /* =========================================================
    SUPERORGANISME — comportements de la page
-   Aperçus, comparateur avant/après, carte, recherche.
+   Trace du curseur, aperçus, comparateur avant/après, carte.
    ========================================================= */
 
 (function () {
@@ -404,221 +404,158 @@
   }
 
   /* ---------------------------------------------------------
-     4. La piste
+     4. La trace du curseur
 
-     Le site explique que les fourmis ne se donnent pas d'ordres : elles
-     réagissent aux traces laissées par les précédentes. Ici, c'est le lecteur
-     qui laisse la trace.
+     Le curseur dépose une phéromone qui s'estompe, et des ouvrières la
+     remontent en file. C'est le mécanisme que le site passe un article à
+     expliquer, appliqué à celui qui vient le lire : il ne commande rien,
+     il passe, et la colonie emprunte son chemin.
 
-     Trois règles, celles du modèle de Deneubourg que l'article « intelligence »
-     décrit déjà, et rien d'autre :
-       1. ce qui passe dépose de la phéromone ;
-       2. la phéromone s'évapore ;
-       3. une fourmi tourne vers la concentration la plus forte devant elle.
-
-     Aucune fourmi ne connaît la position du curseur. Elle ne lit que la grille
-     sous ses pattes, dans un cône de trois capteurs. C'est pour ça que la piste
-     met un instant à se former, et c'est ce délai qui rend le mécanisme
-     visible : si elles suivaient le curseur, ce serait une poursuite, pas une
-     stigmergie.
+     Le point important est que les fourmis ne visent jamais le curseur.
+     Chacune vise la position qu'occupait la trace il y a N millisecondes.
+     C'est ce retard, différent pour chacune, qui les met en file indienne
+     au lieu d'en faire une grappe qui poursuit la souris — et c'est la
+     différence entre suivre une piste et courir après quelqu'un.
      --------------------------------------------------------- */
 
-  var piste = document.getElementById('piste');
-  var toile = document.getElementById('pisteToile');
+  var trace = document.getElementById('trace');
 
-  if (piste && toile && toile.getContext) {
-    var ctx = toile.getContext('2d');
-    var doucP = window.matchMedia('(prefers-reduced-motion: reduce)');
+  if (trace && trace.getContext &&
+      window.matchMedia('(hover: hover) and (pointer: fine)').matches &&
+      !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
 
-    var CELL = 5;          /* côté d'une cellule de la grille, en pixels CSS */
-    var EVAPORATION = 0.972;
-    var DEPOT_CURSEUR = 46;
-    var DEPOT_FOURMI = 5;
-    var MAX = 120;
-    var NB_FOURMIS = 16;
-    var VITESSE = 0.62;
-    var PORTEE_CAPTEUR = 11;   /* distance à laquelle la fourmi « sent » */
-    var OUVERTURE = 0.7;       /* écart angulaire des capteurs latéraux */
+    var ct = trace.getContext('2d');
 
-    var L = 0, H = 0, cols = 0, lignes = 0, grille = null, fourmis = [], dpr = 1;
-    var boucle = null, visible = false;
+    var VIE = 850;        /* durée de vie d'un point de phéromone, en ms */
+    var LARGEUR_MAX = 3.4;
+    var NB = 7;           /* ouvrières sur la piste */
+    var RETARD = 105;     /* écart de temps entre deux ouvrières, en ms */
+    var SOUPLESSE = 0.34; /* fraction du chemin parcourue à chaque image */
 
-    var dimensionner = function () {
-      var r = toile.getBoundingClientRect();
-      if (!r.width) return false;
-      dpr = Math.min(window.devicePixelRatio || 1, 2);
-      L = Math.round(r.width); H = Math.round(r.height);
-      toile.width = Math.round(L * dpr);
-      toile.height = Math.round(H * dpr);
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    var pts = [];         /* {x, y, t} — la phéromone, du plus ancien au plus récent */
+    var colonie = [];
+    for (var k = 0; k < NB; k++) {
+      colonie.push({ x: -60, y: -60, a: 0, retard: 190 + k * RETARD, pose: false });
+    }
 
-      cols = Math.ceil(L / CELL); lignes = Math.ceil(H / CELL);
-      grille = new Float32Array(cols * lignes);
+    var lp = 0, hp = 0, dprT = 1, bt = null, actif = false;
 
-      fourmis = [];
-      for (var i = 0; i < NB_FOURMIS; i++) {
-        fourmis.push({
-          x: Math.random() * L,
-          y: Math.random() * H,
-          a: Math.random() * Math.PI * 2
-        });
+    var tailleTrace = function () {
+      dprT = Math.min(window.devicePixelRatio || 1, 2);
+      lp = window.innerWidth; hp = window.innerHeight;
+      trace.width = Math.round(lp * dprT);
+      trace.height = Math.round(hp * dprT);
+      ct.setTransform(dprT, 0, 0, dprT, 0, 0);
+    };
+
+    window.addEventListener('pointermove', function (e) {
+      if (e.pointerType === 'touch') return;
+      var n = pts.length;
+      /* Inutile d'enregistrer deux points collés : la courbe n'y gagne rien. */
+      if (n) {
+        var d = pts[n - 1];
+        if ((e.clientX - d.x) * (e.clientX - d.x) + (e.clientY - d.y) * (e.clientY - d.y) < 9) return;
       }
-      return true;
-    };
+      pts.push({ x: e.clientX, y: e.clientY, t: performance.now() });
+      if (!actif) lancer();
+    }, { passive: true });
 
-    var lire = function (x, y) {
-      if (x < 0 || y < 0 || x >= L || y >= H) return -1;   /* hors cadre : répulsif */
-      return grille[((y / CELL) | 0) * cols + ((x / CELL) | 0)] || 0;
-    };
-
-    var deposer = function (x, y, quantite) {
-      var c = (x / CELL) | 0, l = (y / CELL) | 0;
-      for (var dl = -1; dl <= 1; dl++) {
-        for (var dc = -1; dc <= 1; dc++) {
-          var cc = c + dc, ll = l + dl;
-          if (cc < 0 || ll < 0 || cc >= cols || ll >= lignes) continue;
-          var part = (dc === 0 && dl === 0) ? 1 : 0.42;
-          var i = ll * cols + cc;
-          grille[i] = Math.min(MAX, grille[i] + quantite * part);
+    /*
+       Où passait la piste il y a `retard` millisecondes. On interpole entre
+       les deux points qui encadrent cet instant : sans ça, les ouvrières
+       sautent d'un point enregistré au suivant.
+    */
+    var positionA = function (instant) {
+      if (pts.length < 2) return null;
+      for (var i = pts.length - 1; i > 0; i--) {
+        if (pts[i - 1].t <= instant && pts[i].t >= instant) {
+          var span = pts[i].t - pts[i - 1].t || 1;
+          var f = (instant - pts[i - 1].t) / span;
+          return {
+            x: pts[i - 1].x + (pts[i].x - pts[i - 1].x) * f,
+            y: pts[i - 1].y + (pts[i].y - pts[i - 1].y) * f
+          };
         }
       }
-    };
-
-    /* ---- Le lecteur dépose, sans le savoir ---- */
-
-    var surPointeur = function (e) {
-      var r = toile.getBoundingClientRect();
-      deposer(e.clientX - r.left, e.clientY - r.top, DEPOT_CURSEUR);
-      if (piste.dataset.touche !== 'true') piste.dataset.touche = 'true';
-    };
-
-    toile.addEventListener('pointermove', surPointeur);
-    toile.addEventListener('pointerdown', surPointeur);
-
-    /* ---- Une image ---- */
-
-    var pas = function () {
-      var i, f;
-
-      for (i = 0; i < grille.length; i++) grille[i] *= EVAPORATION;
-
-      for (i = 0; i < fourmis.length; i++) {
-        f = fourmis[i];
-
-        /* Trois capteurs : devant, à gauche, à droite. Rien d'autre. */
-        var d = lire(f.x + Math.cos(f.a) * PORTEE_CAPTEUR, f.y + Math.sin(f.a) * PORTEE_CAPTEUR);
-        var g = lire(f.x + Math.cos(f.a - OUVERTURE) * PORTEE_CAPTEUR, f.y + Math.sin(f.a - OUVERTURE) * PORTEE_CAPTEUR);
-        var dr = lire(f.x + Math.cos(f.a + OUVERTURE) * PORTEE_CAPTEUR, f.y + Math.sin(f.a + OUVERTURE) * PORTEE_CAPTEUR);
-
-        if (g > d && g >= dr) f.a -= 0.34;
-        else if (dr > d && dr > g) f.a += 0.34;
-        else if (d <= 0.02 && g <= 0.02 && dr <= 0.02) f.a += (Math.random() - 0.5) * 0.7;
-        f.a += (Math.random() - 0.5) * 0.16;
-
-        f.x += Math.cos(f.a) * VITESSE;
-        f.y += Math.sin(f.a) * VITESSE;
-
-        /* Le cadre est un mur : elle rebrousse au lieu de sortir. */
-        if (f.x < 2) { f.x = 2; f.a = Math.PI - f.a; }
-        if (f.x > L - 2) { f.x = L - 2; f.a = Math.PI - f.a; }
-        if (f.y < 2) { f.y = 2; f.a = -f.a; }
-        if (f.y > H - 2) { f.y = H - 2; f.a = -f.a; }
-
-        deposer(f.x, f.y, DEPOT_FOURMI);
-      }
-    };
-
-    var peindre = function () {
-      ctx.clearRect(0, 0, L, H);
-
-      /* La piste : seules les cellules qui portent quelque chose sont tracées. */
-      ctx.fillStyle = '#d7eb80';
-      for (var l = 0; l < lignes; l++) {
-        for (var c = 0; c < cols; c++) {
-          var v = grille[l * cols + c];
-          if (v < 1.4) continue;
-          ctx.globalAlpha = Math.min(0.5, v / MAX * 0.85);
-          ctx.fillRect(c * CELL, l * CELL, CELL, CELL);
-        }
-      }
-
-      /* Les fourmis, par-dessus. */
-      ctx.globalAlpha = 1;
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.92)';
-      for (var i = 0; i < fourmis.length; i++) {
-        ctx.beginPath();
-        ctx.arc(fourmis[i].x, fourmis[i].y, 1.7, 0, Math.PI * 2);
-        ctx.fill();
-      }
+      return instant < pts[0].t ? pts[0] : null;
     };
 
     var image = function () {
-      pas();
-      peindre();
-      boucle = window.requestAnimationFrame(image);
-    };
+      var now = performance.now();
 
-    var demarrer = function () {
-      if (boucle || doucP.matches) return;
-      boucle = window.requestAnimationFrame(image);
-    };
-    var stopper = function () {
-      if (!boucle) return;
-      window.cancelAnimationFrame(boucle);
-      boucle = null;
-    };
+      /* Évaporation : les points trop vieux disparaissent. */
+      while (pts.length && now - pts[0].t > VIE) pts.shift();
 
-    /*
-       Le canevas n'avait pas encore de largeur quand le script s'exécutait,
-       et le dimensionnement échouait silencieusement. Plutôt que de courir
-       après le bon instant, on écoute la taille : `ResizeObserver` se déclenche
-       dès que l'élément en a une, et à chaque fois qu'elle change ensuite.
-       Plus aucune dépendance à l'ordre de chargement.
-    */
-    var branche = false;
+      ct.clearRect(0, 0, lp, hp);
 
-    var brancher = function () {
-      if (branche) return;
-      branche = true;
-      if (doucP.matches) return;
-
-      if ('IntersectionObserver' in window) {
-        new IntersectionObserver(function (es) {
-          es.forEach(function (e) {
-            visible = e.isIntersecting;
-            if (visible) demarrer(); else stopper();
-          });
-        }, { threshold: 0.05 }).observe(piste);
-      } else {
-        visible = true;
-        demarrer();
+      if (pts.length < 2 && !colonie.some(function (f) { return f.pose; })) {
+        actif = false; bt = null;
+        return;
       }
 
-      document.addEventListener('visibilitychange', function () {
-        if (document.hidden) stopper(); else if (visible) demarrer();
-      });
+      /* ---- Le filament ---- */
+      ct.lineCap = 'round';
+      ct.lineJoin = 'round';
+      for (var i = 1; i < pts.length; i++) {
+        var age = (now - pts[i].t) / VIE;          /* 0 = frais, 1 = évaporé */
+        var reste = 1 - age;
+        ct.globalAlpha = reste * reste * 0.6;
+        ct.lineWidth = LARGEUR_MAX * reste + 0.5;
+        ct.strokeStyle = '#c2d967';
+        ct.beginPath();
+        ct.moveTo(pts[i - 1].x, pts[i - 1].y);
+        ct.lineTo(pts[i].x, pts[i].y);
+        ct.stroke();
+      }
+
+      /* ---- Les ouvrières ---- */
+      ct.globalAlpha = 1;
+      for (var j = 0; j < colonie.length; j++) {
+        var f = colonie[j];
+        var cible = positionA(now - f.retard);
+        if (cible) {
+          if (!f.pose) { f.x = cible.x; f.y = cible.y; f.pose = true; }
+          var dx = cible.x - f.x, dy = cible.y - f.y;
+          f.x += dx * SOUPLESSE;
+          f.y += dy * SOUPLESSE;
+          if (dx * dx + dy * dy > 0.4) f.a = Math.atan2(dy, dx);
+        }
+        if (!f.pose) continue;
+
+        /* Une ouvrière que la piste a laissée derrière se retire. */
+        if (!cible) { f.pose = false; continue; }
+
+        ct.save();
+        ct.translate(f.x, f.y);
+        ct.rotate(f.a);
+        ct.fillStyle = '#d7eb80';
+        /* Trois segments : abdomen, thorax, tête. Une fourmi, pas un rond. */
+        ct.beginPath(); ct.ellipse(-3.1, 0, 2.2, 1.7, 0, 0, 6.283); ct.fill();
+        ct.beginPath(); ct.ellipse(0, 0, 1.5, 1.2, 0, 0, 6.283); ct.fill();
+        ct.beginPath(); ct.ellipse(2.6, 0, 1.6, 1.4, 0, 0, 6.283); ct.fill();
+        ct.restore();
+      }
+
+      bt = window.requestAnimationFrame(image);
     };
 
-    var surTaille = function () {
-      var r = toile.getBoundingClientRect();
-      if (!r.width) return;
-      /* Rien à refaire tant que la boîte n'a pas réellement changé. */
-      if (Math.round(r.width) === L && Math.round(r.height) === H) return;
-
-      stopper();
-      if (!dimensionner()) return;
-      brancher();
-      if (doucP.matches) peindre();
-      else if (visible) demarrer();
+    var lancer = function () {
+      if (actif) return;
+      actif = true;
+      bt = window.requestAnimationFrame(image);
     };
 
-    if ('ResizeObserver' in window) {
-      new ResizeObserver(surTaille).observe(toile);
-    } else {
-      window.addEventListener('resize', surTaille);
-      window.addEventListener('load', surTaille);
-    }
-    surTaille();
+    tailleTrace();
+    window.addEventListener('resize', tailleTrace);
+
+    /* Onglet caché : rien à suivre, et la piste sera périmée au retour. */
+    document.addEventListener('visibilitychange', function () {
+      if (!document.hidden) return;
+      if (bt) window.cancelAnimationFrame(bt);
+      bt = null; actif = false; pts = [];
+      colonie.forEach(function (f) { f.pose = false; });
+      ct.clearRect(0, 0, lp, hp);
+    });
   }
 
   /* ---------------------------------------------------------
